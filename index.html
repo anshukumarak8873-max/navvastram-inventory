@@ -31,7 +31,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 </div>
 <div class="tabs">
  <button class="tab active" data-tab="add">➕ आइटम</button><button class="tab" data-tab="stock">📦 स्टॉक</button><button class="tab" data-tab="moves">🔄 आवक/रिटर्न</button>
- <button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button>
+ <button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button><button class="tab" data-tab="dealers">🏭 Dealer खाता</button>
 </div>
 <section class="panel active" id="add"><div class="card"><h2 id="formTitle">नया आइटम जोड़ें</h2>
 <form id="itemForm">
@@ -73,7 +73,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
   <div id="customerSaveMsg" class="note"></div>
  </div>
  <div class="card"><h2>🔎 ग्राहक खाता खोजें</h2>
-  <div class="field"><label>गाँव</label><select id="ledgerVillage"><option value="">सभी गाँव</option></select></div>
+  <div class="field"><label>गाँव चुनें / बोलकर खोजें</label><div class="scanrow"><select id="ledgerVillage"><option value="">सभी गाँव</option></select><button class="secondary" id="voiceVillage" type="button">🎙️ बोलें</button></div></div>
   <div class="field"><label>ग्राहक का नाम खोजें</label><div class="scanrow"><input id="ledgerSearch" placeholder="नाम लिखें या बोलें"><button class="secondary" id="voiceSearch" type="button">🎙️ बोलें</button></div><div id="customerSuggestions"></div></div>
   <div class="actions" style="margin:8px 0"><button class="secondary" id="printLedger" type="button">🖨️ खाता प्रिंट / PDF</button></div><div id="customerLedgerView" class="note">ग्राहक चुनने पर उसका खाता यहाँ दिखेगा।</div>
  </div>
@@ -91,13 +91,25 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
  </div>
  <div class="card"><h2>📋 ग्राहक सूची</h2><div class="note">कुल ग्राहक और कुल बाकी नीचे दिखेगा।</div><div id="ledgerSummary" class="item"></div><div id="customerList"></div></div>
 </section>
+
+<section class="panel" id="dealers">
+ <div class="card"><h2>🏭 Dealer / Wholesaler जोड़ें</h2>
+  <div class="field"><label>Dealer का नाम</label><input id="dealerName" placeholder="Supplier / Wholesaler का नाम"></div>
+  <div class="grid"><div class="field"><label>मोबाइल नंबर</label><input id="dealerPhone" inputmode="numeric" placeholder="वैकल्पिक"></div><div class="field"><label>Opening Balance (₹)</label><input id="dealerOpening" type="number" min="0" step=".01" placeholder="पुराना बाकी"></div></div>
+  <button class="primary" id="addDealer" style="width:100%">Dealer सेव करें</button>
+ </div>
+ <div class="card"><h2>🔎 Dealer खाता खोजें</h2><div class="field"><label>Dealer चुनें</label><select id="dealerSelect"><option value="">Dealer चुनें</option></select></div><div id="dealerLedgerView" class="note">Dealer चुनने पर हिसाब दिखेगा।</div></div>
+ <div class="card"><h2>📦 Dealer से खरीद / उधार</h2><div class="field"><label>खरीद राशि (₹)</label><input id="dealerPurchase" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>विवरण</label><input id="dealerPurchaseRemark" placeholder="जैसे कपड़े की खरीद"></div><button class="primary" id="dealerCredit" style="width:100%">खरीद दर्ज करें</button></div>
+ <div class="card"><h2>💸 Dealer को भुगतान</h2><div class="grid"><div class="field"><label>भुगतान राशि (₹)</label><input id="dealerPayment" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>माध्यम</label><select id="dealerPayMode"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Other</option></select></div></div><div class="field"><label>Remark</label><input id="dealerPaymentRemark" placeholder="वैकल्पिक"></div><button class="primary" id="dealerPay" style="width:100%">भुगतान दर्ज करें</button></div>
+ <div class="card"><h2>📋 Dealer सूची</h2><div id="dealerSummary" class="item"></div><div id="dealerList"></div></div>
+</section>
 </main>
 <div id="scanner"><div class="inner"><h2>📷 Barcode Scan</h2><p class="note" style="color:#d7e4dc">Barcode को कैमरे के सामने रखें।</p><video id="video" playsinline></video><p id="scanStatus" class="note" style="color:white">कैमरा शुरू हो रहा है...</p><button class="secondary" id="closeScan" style="width:100%">✖ बंद करें</button></div></div><div id="toast"></div>
 <script>
-const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
-try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[]}}catch(e){}
+const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],dealers=[],dealerEntries=[],selectedDealerId=null,selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[];dealers=[];dealerEntries=[]}}catch(e){}
 const $=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-function persist(){localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries}));render();renderLedger()}
+function persist(){localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries}));render();renderLedger()}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
@@ -134,11 +146,11 @@ $('testSale').onclick=()=>{let code=$('saleBarcode').value.trim(),n=+$('saleQty'
 function scan(target){scanTarget=target;openScan()}$('scanAssign').onclick=()=>scan('barcode');$('scanFind').onclick=()=>scan('search');$('scanSale').onclick=()=>scan('saleBarcode');$('scanInward').onclick=()=>scan('inBarcode');$('scanReturn').onclick=()=>scan('retBarcode');
 async function openScan(){$('scanner').style.display='block';if(!('BarcodeDetector'in window)){$('scanStatus').textContent='इस browser में BarcodeDetector नहीं है। Barcode manually डालें या updated Chrome try करें।';return}try{let det=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});$('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें';const tick=async()=>{if($('scanner').style.display==='none')return;try{let c=await det.detect($('video'));if(c.length){$(scanTarget).value=c[0].rawValue;closeScan();if(scanTarget==='search')render();if(scanTarget==='inBarcode')showMatched('inBarcode','inFound');if(scanTarget==='retBarcode')showMatched('retBarcode','retFound');toast('Barcode scan हो गया')}else raf=requestAnimationFrame(tick)}catch(e){raf=requestAnimationFrame(tick)}};tick()}catch(e){$('scanStatus').textContent='Camera permission Allow करें। HTTPS जरूरी है।'}}
 function closeScan(){if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('scanner').style.display='none'}$('closeScan').onclick=closeScan;
-function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:5,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries},null,2)],{type:'application/json'})}
+function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:7,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries,dealers,dealerEntries},null,2)],{type:'application/json'})}
 function filename(){return 'NavVastram-Inventory-Backup-'+new Date().toISOString().slice(0,10)+'.json'}
 $('export').onclick=()=>{let u=URL.createObjectURL(backupBlob()),a=document.createElement('a');a.href=u;a.download=filename();a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('Backup डाउनलोड शुरू हुआ')};
 $('shareBackup').onclick=async()=>{let f=new File([backupBlob()],filename(),{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'NavVastram Inventory Backup'});toast('Share sheet खुल गया; Drive चुनें')}catch(e){}}else{$('export').click();toast('Download हुआ; Drive में upload करें')}};
-$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
 
 // Customer Ledger module
 const todayISO=()=>new Date().toISOString().slice(0,10);
@@ -178,7 +190,29 @@ $('addCredit').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),a
 $('addPayment').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),amount=+$('txnPayment').value;if(!c||!Number.isFinite(amount)||amount<=0)return toast('ग्राहक चुनें और सही भुगतान राशि भरें');ledgerEntries.push({id:'L'+Date.now(),customerId:c.id,kind:'PAYMENT',amount,date:$('paymentDate').value||todayISO(),mode:$('paymentMode').value,remark:$('paymentRemark').value.trim(),created:Date.now()});$('txnPayment').value='';$('paymentRemark').value='';persist();showCustomerLedger(c);toast('भुगतान दर्ज हो गया')};
 window.editCustomer=id=>{let c=customers.find(x=>x.id===id);if(!c)return;let name=prompt('ग्राहक का नाम',c.name);if(name===null)return;name=name.trim();if(!name)return toast('नाम खाली नहीं हो सकता');let page=prompt('बही पेज नंबर',c.page||'');if(page===null)return;let phone=prompt('मोबाइल नंबर',c.phone||'');if(phone===null)return;c.name=name;c.page=page.trim();c.phone=phone.trim();persist();toast('ग्राहक विवरण अपडेट हुआ')};
 $('printLedger').onclick=()=>{if(!selectedCustomerId)return toast('पहले ग्राहक चुनें');window.print()};
+$('voiceVillage').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return toast('इस browser में Voice Search उपलब्ध नहीं है');let r=new SR();r.lang='hi-IN';r.interimResults=false;r.onresult=e=>{let spoken=e.results[0][0].transcript.trim().toLowerCase();let found=villages.find(v=>v.toLowerCase()===spoken)||villages.find(v=>v.toLowerCase().includes(spoken)||spoken.includes(v.toLowerCase()));if(found){$('ledgerVillage').value=found;renderLedger();toast('गाँव चुना गया: '+found)}else toast('यह गाँव सूची में नहीं मिला: '+e.results[0][0].transcript)};r.onerror=()=>toast('आवाज पहचान नहीं हुई');r.start()};
 $('voiceSearch').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return toast('इस browser में Voice Search उपलब्ध नहीं है');let r=new SR();r.lang='hi-IN';r.interimResults=false;r.onresult=e=>{$('ledgerSearch').value=e.results[0][0].transcript;renderLedger()};r.onerror=()=>toast('आवाज पहचान नहीं हुई');r.start()};
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();renderLedger();
+
+function renderDealers(){
+ if(!$('dealerList'))return;
+ $('dealerSelect').innerHTML='<option value="">Dealer चुनें</option>'+dealers.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
+ if(selectedDealerId&&dealers.some(d=>d.id===selectedDealerId))$('dealerSelect').value=selectedDealerId;
+ const bal=d=>Number(d.opening||0)+dealerEntries.filter(e=>e.dealerId===d.id).reduce((a,e)=>a+(e.kind==='PURCHASE'?e.amount:-e.amount),0);
+ $('dealerSummary').innerHTML=`कुल Dealer: <b>${dealers.length}</b><br>कुल देय राशि: <b>${money(dealers.reduce((a,d)=>a+Math.max(0,bal(d)),0))}</b>`;
+ $('dealerList').innerHTML=dealers.map(d=>`<div class="item"><b>${esc(d.name)}</b><div class="itemmeta">मोबाइल: ${esc(d.phone||'-')}<br>बाकी: <b>${money(bal(d))}</b></div><button class="secondary" onclick="chooseDealer('${d.id}')">खाता देखें</button></div>`).join('')||'<p class="note">अभी Dealer नहीं जोड़े गए।</p>';
+ if(selectedDealerId){let d=dealers.find(x=>x.id===selectedDealerId);if(d)showDealerLedger(d)}
+}
+function showDealerLedger(d){
+ let rows=dealerEntries.filter(e=>e.dealerId===d.id).sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created),balance=Number(d.opening||0);
+ let body=rows.map(e=>{balance+=e.kind==='PURCHASE'?e.amount:-e.amount;return `<tr><td>${new Date(e.date+'T00:00:00').toLocaleDateString('en-IN')}<br><span class="note">${esc(e.remark||e.mode||'')}</span></td><td>${e.kind==='PURCHASE'?'खरीद':'भुगतान'}</td><td>${e.kind==='PURCHASE'?money(e.amount):'—'}</td><td>${e.kind==='PAYMENT'?money(e.amount):'—'}</td><td>${money(balance)}</td></tr>`}).join('');
+ $('dealerLedgerView').innerHTML=`<div class="item"><b>${esc(d.name)}</b><p>Opening Balance: ${money(d.opening)}</p><h2>वर्तमान बाकी: ${money(balance)}</h2></div><table><tr><th>तारीख</th><th>प्रकार</th><th>खरीद</th><th>भुगतान</th><th>बाकी</th></tr>${body||'<tr><td colspan="5">अभी कोई लेन-देन नहीं</td></tr>'}</table>`;
+}
+window.chooseDealer=id=>{selectedDealerId=id;$('dealerSelect').value=id;let d=dealers.find(x=>x.id===id);if(d)showDealerLedger(d)};
+$('dealerSelect').onchange=()=>window.chooseDealer($('dealerSelect').value);
+$('addDealer').onclick=()=>{let name=$('dealerName').value.trim(),phone=$('dealerPhone').value.trim(),opening=+$('dealerOpening').value||0;if(!name)return toast('Dealer का नाम लिखें');if(dealers.some(d=>d.name.toLowerCase()===name.toLowerCase()))return toast('Dealer पहले से मौजूद है');let d={id:'D'+Date.now(),name,phone,opening};dealers.push(d);$('dealerName').value='';$('dealerPhone').value='';$('dealerOpening').value='';persist();chooseDealer(d.id);toast('Dealer सेव हो गया')};
+$('dealerCredit').onclick=()=>{let d=dealers.find(x=>x.id===selectedDealerId),amount=+$('dealerPurchase').value;if(!d||!Number.isFinite(amount)||amount<=0)return toast('Dealer चुनें और सही खरीद राशि भरें');dealerEntries.push({id:'DE'+Date.now(),dealerId:d.id,kind:'PURCHASE',amount,date:todayISO(),remark:$('dealerPurchaseRemark').value.trim(),created:Date.now()});$('dealerPurchase').value='';$('dealerPurchaseRemark').value='';persist();showDealerLedger(d);toast('Dealer खरीद दर्ज हुई')};
+$('dealerPay').onclick=()=>{let d=dealers.find(x=>x.id===selectedDealerId),amount=+$('dealerPayment').value;if(!d||!Number.isFinite(amount)||amount<=0)return toast('Dealer चुनें और सही भुगतान राशि भरें');dealerEntries.push({id:'DE'+Date.now(),dealerId:d.id,kind:'PAYMENT',amount,date:todayISO(),mode:$('dealerPayMode').value,remark:$('dealerPaymentRemark').value.trim(),created:Date.now()});$('dealerPayment').value='';$('dealerPaymentRemark').value='';persist();showDealerLedger(d);toast('Dealer भुगतान दर्ज हुआ')};
+
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();renderLedger();renderDealers();
 </script></body></html>
