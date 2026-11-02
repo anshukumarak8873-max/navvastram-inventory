@@ -31,7 +31,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 </div>
 <div class="tabs">
  <button class="tab active" data-tab="add">➕ आइटम</button><button class="tab" data-tab="stock">📦 स्टॉक</button><button class="tab" data-tab="moves">🔄 आवक/रिटर्न</button>
- <button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button>
+ <button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button>
 </div>
 <section class="panel active" id="add"><div class="card"><h2 id="formTitle">नया आइटम जोड़ें</h2>
 <form id="itemForm">
@@ -62,13 +62,42 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 <section class="panel" id="history"><div class="card"><h2>📜 Stock Movement History</h2><div class="field"><label>आइटम फ़िल्टर</label><select id="histFilter"><option value="">सभी आइटम</option></select></div><div id="historyList"></div></div></section>
 <section class="panel" id="backup"><div class="card"><h2>💾 Backup / Restore</h2><p class="note">Backup में Items और पूरी Stock History शामिल है। Backup file को Google Drive में रखने के लिए Share बटन से Drive चुनें। यह अभी automatic cloud sync नहीं है।</p><div class="actions"><button class="primary" id="shareBackup">☁️ Drive / Share Backup</button><button class="secondary" id="export">⬇️ Download</button></div><button class="secondary" id="importBtn" style="width:100%;margin-top:8px">⬆️ Restore Backup</button><input type="file" id="importFile" accept="application/json" hidden><p class="note" id="backupInfo"></p></div></section>
 <section class="panel" id="reports"><div class="card"><h2>📊 Inventory Report</h2><div id="report"></div></div><div class="card"><h2>💰 Profit (टेस्ट बिक्री)</h2><p class="note">इस टेस्ट वर्ज़न में बिक्री के समय दर्ज Purchase Price और Sale Price के अंतर से gross profit निकलेगा। वास्तविक बिलिंग में discount, return और अन्य adjustments जोड़कर final profit बनेगा।</p><div id="profitReport"></div></div></section>
+
+<section class="panel" id="ledger">
+ <div class="card"><h2>🏘️ गाँव और ग्राहक जोड़ें</h2>
+  <div class="grid"><div class="field"><label>गाँव का नाम</label><input id="villageName" placeholder="गाँव का नाम"></div><div class="field"><label>&nbsp;</label><button class="secondary" id="addVillage" style="width:100%">+ गाँव जोड़ें</button></div></div>
+  <div class="field"><label>ग्राहक का नाम</label><input id="customerName" placeholder="ग्राहक का नाम"></div>
+  <div class="grid"><div class="field"><label>गाँव चुनें</label><select id="customerVillage"><option value="">गाँव चुनें</option></select></div><div class="field"><label>पेज नंबर (बही)</label><input id="customerPage" placeholder="जैसे 12"></div></div>
+  <div class="field"><label>मोबाइल नंबर (वैकल्पिक)</label><input id="customerPhone" inputmode="numeric" placeholder="मोबाइल नंबर"></div>
+  <button class="primary" id="addCustomer" style="width:100%">ग्राहक सेव करें</button>
+  <div id="customerSaveMsg" class="note"></div>
+ </div>
+ <div class="card"><h2>🔎 ग्राहक खाता खोजें</h2>
+  <div class="field"><label>गाँव</label><select id="ledgerVillage"><option value="">सभी गाँव</option></select></div>
+  <div class="field"><label>ग्राहक का नाम खोजें</label><div class="scanrow"><input id="ledgerSearch" placeholder="नाम लिखें या बोलें"><button class="secondary" id="voiceSearch" type="button">🎙️ बोलें</button></div><div id="customerSuggestions"></div></div>
+  <div id="customerLedgerView" class="note">ग्राहक चुनने पर उसका खाता यहाँ दिखेगा।</div>
+ </div>
+ <div class="card"><h2>🧾 ग्राहक की खरीद / उधार जोड़ें</h2>
+  <div class="field"><label>चुना हुआ ग्राहक</label><input id="txnCustomerLabel" readonly placeholder="पहले ग्राहक चुनें"></div>
+  <div class="grid"><div class="field"><label>खरीद / उधार राशि (₹)</label><input id="txnPurchase" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>आज की तारीख</label><input id="txnDate" type="date"></div></div>
+  <div class="field"><label>विवरण</label><input id="txnRemark" placeholder="जैसे कपड़े की खरीद"></div>
+  <button class="primary" id="addCredit" style="width:100%">+ खरीद खाते में जोड़ें</button>
+ </div>
+ <div class="card"><h2>💵 ग्राहक से भुगतान प्राप्त करें</h2>
+  <div class="grid"><div class="field"><label>भुगतान राशि (₹)</label><input id="txnPayment" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>भुगतान की तारीख</label><input id="paymentDate" type="date"></div></div>
+  <div class="field"><label>भुगतान का माध्यम</label><select id="paymentMode"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>QR</option><option>Other</option></select></div>
+  <div class="field"><label>Remark</label><input id="paymentRemark" placeholder="वैकल्पिक"></div>
+  <button class="primary" id="addPayment" style="width:100%">✓ भुगतान दर्ज करें</button>
+ </div>
+ <div class="card"><h2>📋 ग्राहक सूची</h2><div id="customerList"></div></div>
+</section>
 </main>
 <div id="scanner"><div class="inner"><h2>📷 Barcode Scan</h2><p class="note" style="color:#d7e4dc">Barcode को कैमरे के सामने रखें।</p><video id="video" playsinline></video><p id="scanStatus" class="note" style="color:white">कैमरा शुरू हो रहा है...</p><button class="secondary" id="closeScan" style="width:100%">✖ बंद करें</button></div></div><div id="toast"></div>
 <script>
-const KEY='navvastram_inventory_v2';let products=[],moves=[],editId=null,scanTarget=null,stream=null,raf=null;
-try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[]}}catch(e){}
+const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[]}}catch(e){}
 const $=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-function persist(){localStorage.setItem(KEY,JSON.stringify({products,moves}));render()}
+function persist(){localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries}));render();renderLedger()}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
@@ -105,10 +134,47 @@ $('testSale').onclick=()=>{let code=$('saleBarcode').value.trim(),n=+$('saleQty'
 function scan(target){scanTarget=target;openScan()}$('scanAssign').onclick=()=>scan('barcode');$('scanFind').onclick=()=>scan('search');$('scanSale').onclick=()=>scan('saleBarcode');$('scanInward').onclick=()=>scan('inBarcode');$('scanReturn').onclick=()=>scan('retBarcode');
 async function openScan(){$('scanner').style.display='block';if(!('BarcodeDetector'in window)){$('scanStatus').textContent='इस browser में BarcodeDetector नहीं है। Barcode manually डालें या updated Chrome try करें।';return}try{let det=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});$('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें';const tick=async()=>{if($('scanner').style.display==='none')return;try{let c=await det.detect($('video'));if(c.length){$(scanTarget).value=c[0].rawValue;closeScan();if(scanTarget==='search')render();if(scanTarget==='inBarcode')showMatched('inBarcode','inFound');if(scanTarget==='retBarcode')showMatched('retBarcode','retFound');toast('Barcode scan हो गया')}else raf=requestAnimationFrame(tick)}catch(e){raf=requestAnimationFrame(tick)}};tick()}catch(e){$('scanStatus').textContent='Camera permission Allow करें। HTTPS जरूरी है।'}}
 function closeScan(){if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('scanner').style.display='none'}$('closeScan').onclick=closeScan;
-function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:2,exported:new Date().toISOString(),products,moves},null,2)],{type:'application/json'})}
+function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:4,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries},null,2)],{type:'application/json'})}
 function filename(){return 'NavVastram-Inventory-Backup-'+new Date().toISOString().slice(0,10)+'.json'}
 $('export').onclick=()=>{let u=URL.createObjectURL(backupBlob()),a=document.createElement('a');a.href=u;a.download=filename();a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('Backup डाउनलोड शुरू हुआ')};
 $('shareBackup').onclick=async()=>{let f=new File([backupBlob()],filename(),{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'NavVastram Inventory Backup'});toast('Share sheet खुल गया; Drive चुनें')}catch(e){}}else{$('export').click();toast('Download हुआ; Drive में upload करें')}};
-$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
+
+// Customer Ledger module
+const todayISO=()=>new Date().toISOString().slice(0,10);
+$('txnDate').value=todayISO();$('paymentDate').value=todayISO();
+function fillVillageOptions(){
+ const opts=villages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+ $('customerVillage').innerHTML='<option value="">गाँव चुनें</option>'+opts;
+ const old=$('ledgerVillage').value;
+ $('ledgerVillage').innerHTML='<option value="">सभी गाँव</option>'+opts;
+ if(villages.includes(old))$('ledgerVillage').value=old;
+}
+function renderLedger(){
+ if(!$('customerList'))return;
+ fillVillageOptions();
+ const q=($('ledgerSearch').value||'').trim().toLowerCase(),v=$('ledgerVillage').value;
+ const matches=customers.filter(c=>(!v||c.village===v)&&(!q||c.name.toLowerCase().includes(q)));
+ $('customerSuggestions').innerHTML=matches.slice(0,12).map(c=>`<button class="secondary" style="width:100%;text-align:left;margin:3px 0" onclick="selectCustomer('${c.id}')">${esc(c.name)} • ${esc(c.village)} • पेज ${esc(c.page||'-')}</button>`).join('');
+ $('customerList').innerHTML=customers.length?customers.map(c=>`<div class="item"><b>${esc(c.name)}</b><div class="itemmeta">गाँव: ${esc(c.village)} | पेज: ${esc(c.page||'-')} | मोबाइल: ${esc(c.phone||'-')}</div><button class="secondary" onclick="selectCustomer('${c.id}')">खाता खोलें</button></div>`).join(''):'<p class="note">अभी ग्राहक नहीं जोड़े गए।</p>';
+ if(selectedCustomerId){let c=customers.find(x=>x.id===selectedCustomerId);if(c)showCustomerLedger(c)}
+}
+window.selectCustomer=id=>{selectedCustomerId=id;let c=customers.find(x=>x.id===id);$('txnCustomerLabel').value=c?`${c.name} • ${c.village} • पेज ${c.page||'-'}`:'';showCustomerLedger(c)};
+function showCustomerLedger(c){
+ if(!c)return;
+ const rows=ledgerEntries.filter(e=>e.customerId===c.id).sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created);
+ const opening=Number(c.opening||0);
+ let balance=opening,totalPurchase=0,totalPayment=0;
+ const body=rows.map(e=>{if(e.kind==='CREDIT'){balance+=e.amount;totalPurchase+=e.amount}else{balance-=e.amount;totalPayment+=e.amount}
+ return `<tr><td>${new Date(e.date+'T00:00:00').toLocaleDateString('en-IN')}<br><span class="note">${esc(e.remark||e.mode||'')}</span></td><td>${e.kind==='CREDIT'?'खरीद':'भुगतान'}</td><td>${e.kind==='CREDIT'?money(e.amount):'—'}</td><td>${e.kind==='PAYMENT'?money(e.amount):'—'}</td><td>${money(balance)}</td></tr>`}).join('');
+ $('customerLedgerView').innerHTML=`<div class="item"><b>${esc(c.name)}</b><div class="itemmeta">गाँव: ${esc(c.village)} | बही पेज: <b>${esc(c.page||'-')}</b></div><p>Opening Balance: <b>${money(opening)}</b></p><p>आज की खरीद: <b>${money(rows.filter(e=>e.date===todayISO()&&e.kind==='CREDIT').reduce((a,e)=>a+e.amount,0))}</b></p><p>आज का भुगतान: <b>${money(rows.filter(e=>e.date===todayISO()&&e.kind==='PAYMENT').reduce((a,e)=>a+e.amount,0))}</b></p><h2>वर्तमान बाकी: ${money(balance)}</h2></div><table><tr><th>तारीख / विवरण</th><th>प्रकार</th><th>खरीद</th><th>भुगतान</th><th>बाकी</th></tr>${body||'<tr><td colspan="5">अभी कोई लेन-देन नहीं</td></tr>'}</table>`;
+}
+$('addVillage').onclick=()=>{let v=$('villageName').value.trim();if(!v)return toast('गाँव का नाम लिखें');if(villages.some(x=>x.toLowerCase()===v.toLowerCase()))return toast('यह गाँव पहले से मौजूद है');villages.push(v);$('villageName').value='';persist();toast('गाँव जुड़ गया')};
+$('addCustomer').onclick=()=>{let name=$('customerName').value.trim(),village=$('customerVillage').value,page=$('customerPage').value.trim(),phone=$('customerPhone').value.trim();if(!name||!village)return toast('ग्राहक का नाम और गाँव चुनें');if(customers.some(c=>c.name.toLowerCase()===name.toLowerCase()&&c.village===village))return toast('यह ग्राहक पहले से मौजूद है');let c={id:'C'+Date.now(),name,village,page,phone,opening:0};customers.push(c);$('customerName').value='';$('customerPage').value='';$('customerPhone').value='';persist();selectCustomer(c.id);toast('ग्राहक सेव हो गया')};
+$('ledgerSearch').oninput=renderLedger;$('ledgerVillage').onchange=renderLedger;
+$('addCredit').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),amount=+$('txnPurchase').value;if(!c||!Number.isFinite(amount)||amount<=0)return toast('ग्राहक चुनें और सही खरीद राशि भरें');ledgerEntries.push({id:'L'+Date.now(),customerId:c.id,kind:'CREDIT',amount,date:$('txnDate').value||todayISO(),remark:$('txnRemark').value.trim(),created:Date.now()});$('txnPurchase').value='';$('txnRemark').value='';persist();showCustomerLedger(c);toast('खरीद खाते में जुड़ गई')};
+$('addPayment').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),amount=+$('txnPayment').value;if(!c||!Number.isFinite(amount)||amount<=0)return toast('ग्राहक चुनें और सही भुगतान राशि भरें');ledgerEntries.push({id:'L'+Date.now(),customerId:c.id,kind:'PAYMENT',amount,date:$('paymentDate').value||todayISO(),mode:$('paymentMode').value,remark:$('paymentRemark').value.trim(),created:Date.now()});$('txnPayment').value='';$('paymentRemark').value='';persist();showCustomerLedger(c);toast('भुगतान दर्ज हो गया')};
+$('voiceSearch').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return toast('इस browser में Voice Search उपलब्ध नहीं है');let r=new SR();r.lang='hi-IN';r.interimResults=false;r.onresult=e=>{$('ledgerSearch').value=e.results[0][0].transcript;renderLedger()};r.onerror=()=>toast('आवाज पहचान नहीं हुई');r.start()};
+
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();renderLedger();
 </script></body></html>
