@@ -1,14 +1,15 @@
-NavVastram Inventory V13 – 80mm Invoice Layout
+NavVastram Inventory V14 – 80mm Invoice Font & Column Fix
 
 Files: index.html, manifest.json, sw.js, README.txt
 
-V13 invoice layout updates:
-- 80mm thermal-roll canvas with approximately 5mm left/right margins.
-- Shop heading, address, phone numbers, date/time and invoice number centered.
-- Customer details left aligned; Page No. shown only when available.
-- Fixed Item / MRP / QTY / RATE / AMOUNT columns sized for five-digit MRP and three-digit quantity.
-- Long item names wrap inside the Item column without overlapping MRP.
-- Subtotal, discount and amount values align with the Amount column. Khata invoices show Amount Received, Previous Balance and Total Balance Due.
-- Existing PNG share/print and PDF share functions are retained.
+V14 invoice improvements:
+- Item, MRP, QTY, RATE and AMOUNT text increased by approximately 50%.
+- Other invoice text increased by approximately 30%.
+- Reduced all column gaps to 3 px; MRP/QTY and QTY/RATE gaps are compact and consistent.
+- All invoice content and numeric columns are left aligned.
+- Amount column remains within the 80 mm printable width and 5 mm side margins.
+- Long item names wrap below within the Item column without overlapping MRP.
+- Customer Name label changed to Name.
+- Existing inventory, ledgers, billing, PNG share and PDF share remain in place.
 
 Update: back up app data first. Upload these four files to the repository root and replace the existing files. Do not clear browser site data.

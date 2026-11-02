@@ -283,17 +283,17 @@ $('billPayType').onchange=()=>{if($('billPayType').value==='CREDIT'&&billMode!==
 $('completeBill').onclick=async()=>{if(!billMode)return toast('पहले नगद या खाता चुनें');if(!billCart.length)return toast('पहले बिल में आइटम जोड़ें');let {subtotal,discount,grand}=billTotals();if(discount>subtotal)return toast('Discount कुल राशि से अधिक नहीं हो सकता');for(let x of billCart){let p=products.find(p=>p.id===x.productId);if(!p||Number(p.qty)<x.qty)return toast('स्टॉक बदल गया है। बिल दोबारा जाँचें: '+x.name)}let pay=$('billPayType').value,c=billMode==='KHATA'?billSelectedCustomer:null;if(pay==='CREDIT'&&billMode!=='KHATA')return toast('नगद बिल को उधार नहीं बना सकते; Khata चुनें');if(billMode==='KHATA')pay='CREDIT';if(billMode==='KHATA'&&!c)return toast('खाता ग्राहक चुनें');let amountReceived=billMode==='KHATA'?Math.max(0,Number($('billAmountReceived').value||0)):0,previousBalance=c?billCustomerBalance(c):0,totalDue=previousBalance+grand;if(amountReceived>totalDue)return toast('प्राप्त रकम कुल बकाया से अधिक नहीं हो सकती');let now=new Date(),id='B'+now.getTime(),walkName=$('billWalkName').value.trim(),walkPhone=$('billWalkPhone').value.trim(),walkAddress=$('billWalkAddress').value.trim(),items=billCart.map(x=>({...x,amount:Number((x.qty*x.rate).toFixed(2)),discountPercent:x.mrp>0?Math.max(0,(x.mrp-x.rate)/x.mrp*100):0}));items.forEach(x=>{let p=products.find(p=>p.id===x.productId);p.qty=Number((Number(p.qty)-x.qty).toFixed(3));addMove(p,'SALE',x.qty,p.purchase,'Bill '+id);moves[0].salePrice=x.rate});let bill={id,date:now.toISOString(),mode:billMode,customerId:c?.id||null,customerName:c?.name||(walkName||'नगद ग्राहक'),customerVillage:c?.village||'',customerPage:c?.page||'',customerPhone:c?.phone||walkPhone,customerAddress:c?('गाँव: '+c.village):walkAddress,payment:billMode==='KHATA'?'CREDIT':pay,subtotal,discount,grand,previousBalance,amountReceived,remainingBalance:totalDue-amountReceived,items};bills.unshift(bill);if(c){ledgerEntries.push({id:'L'+now.getTime(),customerId:c.id,kind:'CREDIT',amount:grand,date:todayISO(),remark:'Bill '+id,created:now.getTime()});if(amountReceived>0)ledgerEntries.push({id:'L'+(now.getTime()+1),customerId:c.id,kind:'PAYMENT',amount:amountReceived,date:todayISO(),mode:$('billReceivedMode').value,remark:'Bill payment received '+id,created:now.getTime()+1})}if(!persist())return;billCart=[];$('billDiscount').value=0;$('billAmountReceived').value=0;$('billReceivedMode').value='CASH';$('billPayType').value='CASH';$('billWalkName').value='';$('billWalkPhone').value='';$('billWalkAddress').value='';renderBillCart();renderBillHistory();$('billWorkArea').style.display='none';$('billModeCard').style.display='block';$('billCustomerStep').style.display='none';billMode=null;billSelectedCustomer=null;toast('बिल सेव हुआ और स्टॉक घटा: '+id);await shareBillPNG(id)};
 function billInvoiceHTML(b){let khata=b.mode==='KHATA';return `<div class="bill-paper"><div class="center"><h2>NavVastram Shopping Mall</h2><div>Tax Invoice / Cash Memo</div></div><hr><div><b>Invoice:</b> ${esc(b.id)}<br><b>Date:</b> ${new Date(b.date).toLocaleString('en-IN')}<br><b>Customer:</b> ${esc(b.customerName)}${b.customerPhone?'<br><b>Mobile:</b> '+esc(b.customerPhone):''}${b.customerAddress?'<br><b>Address:</b> '+esc(b.customerAddress):''}${b.customerPage?'<br><b>Khata Page:</b> '+esc(b.customerPage):''}</div><hr><table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amt</th></tr></thead><tbody>${b.items.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.rate)}</td><td>${money(x.amount)}</td></tr>`).join('')}</tbody></table><hr><div class="right">Subtotal: ${money(b.subtotal)}<br>Bill Discount: ${money(b.discount)}<br><b>Current Bill: ${money(b.grand)}</b>${khata?`<hr>Previous Balance: ${money(b.previousBalance||0)}<br>Current Bill: ${money(b.grand)}<br>Total Due: ${money((b.previousBalance||0)+b.grand)}<br>Amount Received: ${money(b.amountReceived||0)}<br><b>Remaining Balance: ${money(b.remainingBalance??((b.previousBalance||0)+b.grand))}</b>`:`<br>Payment: ${esc(b.payment||'CASH')}`}</div><hr><div class="center">धन्यवाद! फिर आइए।</div></div>`}
 function invoiceCanvas(b){
- // 80 mm roll canvas (600 px wide); 38 px left/right margins are approx. 5 mm each.
+ // 80 mm thermal roll at 600 px, with 5 mm safe margins on both sides.
  const width=600,margin=38,content=width-margin*2,items=b.items||[];
- const c=document.createElement('canvas');c.width=width;c.height=12000;
- const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,12000);
+ const c=document.createElement('canvas');c.width=width;c.height=16000;
+ const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,16000);
  const font='"Noto Sans Devanagari", "Noto Sans", Arial, sans-serif';
- const lines=[];let y=0;
- const text=(value,x,yy,size=18,bold=false,align='left')=>{
+ let y=0;
+ const text=(value,x,yy,size=21,bold=false,align='left')=>{
    ctx.font=(bold?'700 ':'400 ')+size+'px '+font;ctx.fillStyle='#111';ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.fillText(String(value??''),x,yy);
  };
- const rule=(yy)=>{ctx.save();ctx.strokeStyle='#222';ctx.lineWidth=1;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(margin,yy);ctx.lineTo(width-margin,yy);ctx.stroke();ctx.restore()};
- const wrap=(value,maxWidth,size=17,bold=false)=>{
+ const rule=(yy)=>{ctx.save();ctx.strokeStyle='#222';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(margin,yy);ctx.lineTo(width-margin,yy);ctx.stroke();ctx.restore()};
+ const wrap=(value,maxWidth,size=22,bold=false)=>{
    ctx.font=(bold?'700 ':'400 ')+size+'px '+font;
    const words=String(value??'').trim().split(/\s+/).filter(Boolean);if(!words.length)return [''];
    const out=[];let line='';
@@ -306,54 +306,54 @@ function invoiceCanvas(b){
    }
    if(line)out.push(line);return out;
  };
- const center=(value,size,bold=false,gap=7)=>{y+=size+gap;text(value,width/2,y,size,bold,'center')};
- // Shop heading
- y=10;center('|| श्री गणेशाय नमः ||',22,true,5);
- center('प्रहलाद प्रसाद संजय कुमार',24,true,5);
- center('सतुआ बाजार | बिहार ग्रामीण बैंक के सामने',17,true,4);
- center('+91 9934441424  |  +91 8873638699',17,true,7);
- center(new Date(b.date).toLocaleString('en-IN'),15,false,4);
- center('Invoice No.: '+b.id,17,true,8);
- y+=2;rule(y);y+=23;
- // Customer details, left aligned
- const detail=(label,value)=>{const str=String(value??'').trim();if(!str)return;y+=22;text(label,margin,y,16,true);text(str,margin+105,y,16,false)};
- detail('Customer Name:',b.customerName||'नगद ग्राहक');
+ const center=(value,size,bold=false,gap=8)=>{y+=size+gap;text(value,width/2,y,size,bold,'center')};
+ // Header: non-item text enlarged by approximately 30%.
+ y=12;center('|| श्री गणेशाय नमः ||',29,true,7);
+ center('प्रहलाद प्रसाद संजय कुमार',31,true,7);
+ center('सतुआ बाजार | बिहार ग्रामीण बैंक के सामने',22,true,6);
+ center('+91 9934441424  |  +91 8873638699',22,true,8);
+ center(new Date(b.date).toLocaleString('en-IN'),20,false,6);
+ center('Invoice No.: '+b.id,22,true,10);
+ y+=3;rule(y);y+=27;
+ // Customer details are left aligned and enlarged by about 30%.
+ const detail=(label,value)=>{const str=String(value??'').trim();if(!str)return;y+=27;text(label,margin,y,21,true,'left');text(str,margin+112,y,21,false,'left')};
+ detail('Name:',b.customerName||'नगद ग्राहक');
  detail('Address:',b.customerAddress||'');
  detail('Phone:',b.customerPhone||'');
  if(b.customerPage)detail('Page No.:',b.customerPage);
- y+=4;rule(y);y+=25;
- // Fixed-width columns fit inside the 70 mm printable area.
- const gap=8,cols=[174,78,42,92,106],starts=[];let xx=margin;
+ y+=6;rule(y);y+=28;
+ // Compact, left-aligned columns. Every inter-column gap is 3 px;
+ // MRP has room for five digits, QTY for three digits, and Amount stays inside 80 mm.
+ const cols=[145,78,42,105,142],gap=3,starts=[];let xx=margin;
  for(const w of cols){starts.push(xx);xx+=w+gap}
- const rights=starts.map((x,i)=>x+cols[i]);
  const headers=['Item','MRP','QTY','RATE','AMOUNT'];
- y+=20;
- headers.forEach((h,i)=>text(h, i===0?starts[i]:rights[i], y, i===4?15:16,true,i===0?'left':'right'));
- y+=9;rule(y);y+=23;
- // Item names wrap within the Item column only; numeric columns never overlap.
+ y+=24;
+ headers.forEach((h,i)=>text(h,starts[i],y,24,true,'left'));
+ y+=10;rule(y);y+=28;
+ // Item text wraps within its own column; all numeric columns remain separate.
  for(const item of items){
-   const nameLines=wrap(item.name,cols[0]-5,17,false);
-   const rowTop=y;nameLines.forEach((ln,j)=>text(ln,starts[0],rowTop+j*22,17,false,'left'));
-   text(money(item.mrp),rights[1],rowTop,16,false,'right');
-   text(Number(item.qty).toLocaleString('en-IN',{maximumFractionDigits:3}),rights[2],rowTop,16,false,'right');
-   text(money(item.rate),rights[3],rowTop,16,false,'right');
-   text(money(item.amount),rights[4],rowTop,16,false,'right');
-   y+=Math.max(26,nameLines.length*22+5);rule(y);y+=17;
+   const nameLines=wrap(item.name,cols[0]-4,25,false);
+   const rowTop=y;nameLines.forEach((ln,j)=>text(ln,starts[0],rowTop+j*30,25,false,'left'));
+   text(money(item.mrp),starts[1],rowTop,24,false,'left');
+   text(Number(item.qty).toLocaleString('en-IN',{maximumFractionDigits:3}),starts[2],rowTop,24,false,'left');
+   text(money(item.rate),starts[3],rowTop,24,false,'left');
+   text(money(item.amount),starts[4],rowTop,24,false,'left');
+   y+=Math.max(32,nameLines.length*30+6);rule(y);y+=19;
  }
- // Totals: values line up with the Amount column's right edge.
- const totalRow=(label,value,bold=false,size=17)=>{y+=24;text(label,margin,y,size,bold,'left');text(money(value),rights[4],y,size,bold,'right')};
- totalRow('Subtotal:',b.subtotal,false,17);
- totalRow('Discount:',b.discount,false,17);
- totalRow('Current Bill:',b.grand,true,19);
+ // Totals: both labels and values are left aligned; values stay inside the right margin.
+ const totalRow=(label,value,bold=false,size=22)=>{y+=29;text(label,margin,y,size,bold,'left');text(money(value),starts[4],y,size,bold,'left')};
+ totalRow('Subtotal:',b.subtotal,false,22);
+ totalRow('Discount:',b.discount,false,22);
+ totalRow('Current Bill:',b.grand,true,25);
  if(b.mode==='KHATA'){
-   totalRow('Amount Received:',b.amountReceived||0,false,17);
-   totalRow('Previous Balance:',b.previousBalance||0,false,17);
-   totalRow('Total Balance Due:',b.remainingBalance??((b.previousBalance||0)+b.grand-(b.amountReceived||0)),true,19);
+   totalRow('Amount Received:',b.amountReceived||0,false,22);
+   totalRow('Previous Balance:',b.previousBalance||0,false,22);
+   totalRow('Total Balance Due:',b.remainingBalance??((b.previousBalance||0)+b.grand-(b.amountReceived||0)),true,25);
  }else{
-   y+=5;text('Payment: '+String(b.payment||'CASH'),margin,y+20,16,false,'left');y+=24;
+   y+=7;text('Payment: '+String(b.payment||'CASH'),margin,y+24,21,false,'left');y+=29;
  }
- y+=12;rule(y);y+=31;text('Thank You And Visit Again.',width/2,y,19,true,'center');
- y+=26;
+ y+=15;rule(y);y+=38;text('Thank You And Visit Again.',margin,y,25,true,'left');
+ y+=32;
  const finalHeight=Math.ceil(y+margin);
  const out=document.createElement('canvas');out.width=width;out.height=finalHeight;
  out.getContext('2d').drawImage(c,0,0,width,finalHeight,0,0,width,finalHeight);
