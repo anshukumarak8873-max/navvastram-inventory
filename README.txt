@@ -1,15 +1,20 @@
-NavVastram Inventory V14 – 80mm Invoice Font & Column Fix
+NavVastram Inventory V15 – Item Discount & Bill Discount Allocation
 
 Files: index.html, manifest.json, sw.js, README.txt
 
-V14 invoice improvements:
-- Item, MRP, QTY, RATE and AMOUNT text increased by approximately 50%.
-- Other invoice text increased by approximately 30%.
-- Reduced all column gaps to 3 px; MRP/QTY and QTY/RATE gaps are compact and consistent.
-- All invoice content and numeric columns are left aligned.
-- Amount column remains within the 80 mm printable width and 5 mm side margins.
-- Long item names wrap below within the Item column without overlapping MRP.
-- Customer Name label changed to Name.
-- Existing inventory, ledgers, billing, PNG share and PDF share remain in place.
+V15 changes:
+- Invoice summary label changed from CURRENT BILL to BILL TOTAL.
+- Every invoice item shows its MRP discount percentage directly below MRP.
+- Customer Discount percentage is shown in brackets beside the discount amount.
+- Bill-level Customer Discount is allocated proportionally across only those items whose MRP is higher than their original selling rate.
+- Items whose MRP equals their selling rate are excluded from bill-level discount and their rates remain unchanged.
+- Adjusted item rates and amounts are saved in the invoice, so the sum of item amounts equals the final BILL TOTAL (subject to currency rounding).
+- Discount cannot exceed the combined selling value of eligible discounted items.
+- Existing inventory, customer ledger, dealer ledger, billing, PNG share, PDF share, and stored data key are retained.
 
-Update: back up app data first. Upload these four files to the repository root and replace the existing files. Do not clear browser site data.
+Update instructions:
+1. Export a backup from the app first.
+2. Extract this ZIP.
+3. Upload and replace all four files directly in the GitHub repository root.
+4. Commit changes, then reopen the website. Do not clear browser site data.
+5. Test with (a) one item where MRP > selling rate and (b) one item where MRP = selling rate. Apply a customer discount and verify only the first item's rate reduces.
