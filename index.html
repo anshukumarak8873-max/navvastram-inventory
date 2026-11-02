@@ -1,164 +1,100 @@
 <!doctype html>
-<html lang="hi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#173b32">
-<link rel="manifest" href="manifest.json">
+<html lang="hi"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#173b32"><link rel="manifest" href="manifest.json">
 <title>NavVastram Inventory</title>
 <style>
-:root{--green:#173b32;--gold:#d6ad55;--bg:#f4f6f3;--card:#fff;--ink:#17221e;--muted:#66736d;--red:#b42318}
+:root{--g:#173b32;--gold:#d6ad55;--bg:#f4f6f3;--ink:#17221e;--muted:#66736d;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;color:var(--ink)}
-header{background:var(--green);color:white;padding:18px 16px 16px;position:sticky;top:0;z-index:5}
-header h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:#d9e5df;font-size:12px}
-main{max-width:650px;margin:auto;padding:14px}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.tab{border:0;border-radius:14px;padding:13px 5px;background:#e2e9e4;color:var(--green);font-weight:700;font-size:13px}
-.tab.active{background:var(--green);color:white}
-.panel{display:none}.panel.active{display:block}
-.card{background:var(--card);border-radius:17px;padding:15px;margin-bottom:13px;box-shadow:0 2px 10px #10251a0c}
-h2{font-size:17px;margin:0 0 13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{display:block;font-size:12px;color:var(--muted);font-weight:650;margin:0 0 5px}
-input,textarea{width:100%;border:1px solid #d8e0da;border-radius:11px;padding:12px;font-size:16px;background:#fff;color:var(--ink);outline:none}
-input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 2px #173b3215}
-textarea{min-height:72px;resize:vertical}.field{margin-bottom:11px}.wide{grid-column:1/-1}
-button{cursor:pointer;font:inherit}.primary,.secondary,.danger{border:0;border-radius:12px;padding:13px 14px;font-weight:750}
-.primary{background:var(--green);color:white}.secondary{background:#e8eee9;color:var(--green)}.danger{background:#fae8e7;color:var(--red)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}
-.scanrow{display:flex;gap:8px}.scanrow input{min-width:0;flex:1}.scanrow button{white-space:nowrap}
-.note{font-size:12px;color:var(--muted);line-height:1.45}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:13px}
-.stat{background:#fff;border-radius:14px;padding:12px 8px;text-align:center}.stat b{display:block;font-size:19px;color:var(--green)}.stat span{font-size:11px;color:var(--muted)}
-.item{border:1px solid #e7ece8;border-radius:13px;padding:12px;margin-top:9px}
-.itemtop{display:flex;justify-content:space-between;gap:10px}.itemname{font-weight:800}.pill{font-size:11px;background:#edf3ee;color:var(--green);padding:4px 8px;border-radius:20px;white-space:nowrap}
-.itemmeta{font-size:12px;color:var(--muted);margin:6px 0 10px;line-height:1.5}
-.item .actions button{padding:9px;font-size:12px}
-#scanner{display:none;position:fixed;inset:0;background:#000e;z-index:20;padding:16px;color:white}
-#scanner video{width:100%;max-height:65vh;object-fit:cover;border-radius:14px;background:#222;margin:14px 0}
-#scanner .scanbox{max-width:600px;margin:8vh auto;background:#14231e;padding:16px;border-radius:18px}
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#17221e;color:white;padding:11px 16px;border-radius:30px;display:none;z-index:30;font-size:13px;max-width:90%;text-align:center}
-.small{font-size:11px;color:var(--muted)}
-@media(max-width:390px){.grid{grid-template-columns:1fr 1fr}.tab{font-size:12px}}
-</style>
-</head>
-<body>
-<header><h1>🧾 NavVastram Inventory</h1><p>स्टॉक और बारकोड मैनेजमेंट • मोबाइल टेस्ट वर्ज़न</p></header>
+header{background:var(--g);color:white;padding:17px 15px;position:sticky;top:0;z-index:5}header h1{font-size:20px;margin:0}header p{font-size:12px;margin:4px 0 0;color:#d9e5df}
+main{max-width:680px;margin:auto;padding:13px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.stat{background:white;border-radius:14px;padding:12px;text-align:center}.stat b{display:block;font-size:19px;color:var(--g)}.stat span{font-size:11px;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}.tab{border:0;border-radius:12px;padding:12px 3px;background:#e2e9e4;color:var(--g);font-weight:750;font-size:12px}.tab.active{background:var(--g);color:white}
+.panel{display:none}.panel.active{display:block}.card{background:white;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 9px #10251a0b}
+h2{font-size:16px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{margin-bottom:10px}label{display:block;font-size:12px;color:var(--muted);font-weight:650;margin-bottom:5px}
+input,textarea,select{width:100%;border:1px solid #d8e0da;border-radius:11px;padding:11px;font-size:16px;background:white;color:var(--ink)}textarea{min-height:65px}
+button{font:inherit;cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:11px;padding:12px;font-weight:750}.primary{background:var(--g);color:white}.secondary{background:#e8eee9;color:var(--g)}.danger{background:#fae8e7;color:var(--red)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}.scanrow{display:flex;gap:7px}.scanrow input{flex:1;min-width:0}.scanrow button{white-space:nowrap}
+.note{font-size:11px;color:var(--muted);line-height:1.45}.item{border:1px solid #e7ece8;border-radius:12px;padding:11px;margin-top:9px}.itemtop{display:flex;justify-content:space-between;gap:8px}.itemname{font-weight:800}.pill{font-size:11px;background:#edf3ee;color:var(--g);padding:4px 8px;border-radius:20px;white-space:nowrap}.itemmeta{font-size:12px;color:var(--muted);line-height:1.55;margin:6px 0 9px}.item .actions button{font-size:12px;padding:9px}
+#scanner{display:none;position:fixed;inset:0;background:#000e;z-index:20;padding:14px;color:white}#scanner .inner{max-width:600px;margin:7vh auto;background:#14231e;padding:15px;border-radius:17px}#video{width:100%;max-height:60vh;object-fit:cover;background:#222;border-radius:12px}
+#toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#17221e;color:white;padding:11px 16px;border-radius:25px;z-index:30;font-size:13px;max-width:90%;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;padding:8px 5px;border-bottom:1px solid #e8ece9}th{color:var(--muted)}
+@media(max-width:380px){.tab{font-size:11px}}
+</style></head><body>
+<header><h1>🧾 NavVastram Inventory</h1><p>स्टॉक, बारकोड, खरीद, बिक्री और हिस्ट्री</p></header>
 <main>
 <div class="stats">
  <div class="stat"><b id="totalItems">0</b><span>कुल आइटम</span></div>
  <div class="stat"><b id="totalQty">0</b><span>कुल पीस</span></div>
- <div class="stat"><b id="lowStock">0</b><span>कम स्टॉक</span></div>
+ <div class="stat"><b id="stockValue">₹0</b><span>स्टॉक वैल्यू (Purchase Price पर)</span></div>
+ <div class="stat"><b id="lowStock">0</b><span>कम स्टॉक (5 या कम)</span></div>
 </div>
 <div class="tabs">
- <button class="tab active" data-tab="add">➕ आइटम जोड़ें</button>
- <button class="tab" data-tab="list">📦 स्टॉक लिस्ट</button>
- <button class="tab" data-tab="backup">💾 बैकअप</button>
+ <button class="tab active" data-tab="add">➕ आइटम</button><button class="tab" data-tab="stock">📦 स्टॉक</button><button class="tab" data-tab="moves">🔄 आवक/रिटर्न</button>
+ <button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button>
 </div>
-
-<section class="panel active" id="add">
- <div class="card">
-  <h2 id="formTitle">नया आइटम जोड़ें</h2>
-  <form id="itemForm">
-   <div class="field"><label>आइटम का नाम *</label><input id="name" required placeholder="जैसे: Cotton Shirt"></div>
-   <div class="grid">
-    <div class="field"><label>Purchase Price (₹) *</label><input id="purchase" type="number" min="0" step="0.01" required placeholder="0"></div>
-    <div class="field"><label>Sale Price (₹) *</label><input id="sale" type="number" min="0" step="0.01" required placeholder="0"></div>
-    <div class="field"><label>MRP (₹) *</label><input id="mrp" type="number" min="0" step="0.01" required placeholder="0"></div>
-    <div class="field"><label>Quantity (पीस) *</label><input id="qty" type="number" min="0" step="1" required placeholder="0"></div>
-   </div>
-   <div class="field"><label>Barcode Number</label>
-    <div class="scanrow"><input id="barcode" inputmode="numeric" placeholder="बारकोड नंबर लिखें या Scan करें"><button class="secondary" type="button" id="scanAssign">📷 Scan</button></div>
-    <div class="note">पहले से बना barcode label scan करें। स्कैन हुआ नंबर इसी आइटम को assign होगा। चाहें तो नंबर manually भी लिख सकते हैं।</div>
-   </div>
-   <div class="field"><label>Remark / Description</label><textarea id="remark" placeholder="रंग, साइज, डिजाइन या अन्य जानकारी..."></textarea></div>
-   <div class="actions"><button class="primary" type="submit" id="saveBtn">💾 आइटम सेव करें</button><button class="secondary" type="button" id="resetBtn">↻ साफ करें</button></div>
-  </form>
- </div>
-</section>
-
-<section class="panel" id="list">
- <div class="card">
-  <h2>📦 Inventory / Stock</h2>
-  <div class="field"><label>नाम या Barcode से खोजें</label><div class="scanrow"><input id="search" placeholder="नाम / बारकोड नंबर"><button class="secondary" id="scanFind" type="button">📷 Scan</button></div></div>
-  <div id="items"></div>
- </div>
- <div class="card">
-  <h2>🧪 बिक्री टेस्ट (स्टॉक घटाएँ)</h2>
-  <div class="field"><label>Barcode Number</label><div class="scanrow"><input id="saleBarcode" placeholder="बारकोड स्कैन/लिखें"><button class="secondary" id="scanSale" type="button">📷 Scan</button></div></div>
-  <div class="grid"><div class="field"><label>बिक्री Quantity</label><input id="saleQty" type="number" min="1" value="1"></div><div class="field"><label>&nbsp;</label><button class="primary" id="testSale" type="button" style="width:100%">🛒 स्टॉक घटाएँ</button></div></div>
-  <p class="note">यह अभी केवल inventory testing के लिए है। बाद में इसे असली Billing module से जोड़ा जाएगा।</p>
- </div>
-</section>
-
-<section class="panel" id="backup">
- <div class="card">
-  <h2>💾 Data Backup / Restore</h2>
-  <p class="note">अभी डेटा इसी मोबाइल/ब्राउज़र में सेव होता है। फोन बदलने या browser data clear करने से पहले backup file डाउनलोड कर लें। Google Drive automatic upload अगला चरण होगा।</p>
-  <div class="actions"><button class="primary" id="export">⬇️ Backup Download</button><button class="secondary" id="importBtn">⬆️ Backup Restore</button></div>
-  <input type="file" id="importFile" accept="application/json" hidden>
-  <p class="small" id="backupInfo"></p>
- </div>
-</section>
+<section class="panel active" id="add"><div class="card"><h2 id="formTitle">नया आइटम जोड़ें</h2>
+<form id="itemForm">
+<div class="field"><label>आइटम का नाम *</label><input id="name" required placeholder="जैसे Cotton Shirt"></div>
+<div class="grid">
+<div class="field"><label>Purchase Price (₹) *</label><input id="purchase" type="number" min="0" step=".01" required></div>
+<div class="field"><label>Sale Price (₹) *</label><input id="sale" type="number" min="0" step=".01" required></div>
+<div class="field"><label>MRP (₹) *</label><input id="mrp" type="number" min="0" step=".01" required></div>
+<div class="field"><label>Quantity (पीस) *</label><input id="qty" type="number" min="0" step="1" required></div>
+</div>
+<div class="field"><label>Barcode Number</label><div class="scanrow"><input id="barcode" placeholder="नंबर लिखें या Scan करें"><button class="secondary" id="scanAssign" type="button">📷 Scan</button></div><p class="note">बना हुआ barcode scan करें या नंबर manually डालें। Duplicate barcode स्वीकार नहीं होगा।</p></div>
+<div class="field"><label>Remark / Description</label><textarea id="remark" placeholder="रंग, साइज, डिजाइन आदि"></textarea></div>
+<div class="actions"><button class="primary" id="saveBtn">💾 सेव करें</button><button class="secondary" type="button" id="resetBtn">↻ साफ करें</button></div>
+</form></div></section>
+<section class="panel" id="stock"><div class="card"><h2>📦 Inventory / Stock List</h2><div class="field"><label>नाम या Barcode से खोजें</label><div class="scanrow"><input id="search" placeholder="खोजें"><button class="secondary" id="scanFind">📷 Scan</button></div></div><div id="items"></div></div>
+<div class="card"><h2>🛒 बिक्री टेस्ट (स्टॉक घटाएँ)</h2><div class="field"><label>Barcode</label><div class="scanrow"><input id="saleBarcode" placeholder="Barcode"><button class="secondary" id="scanSale">📷 Scan</button></div></div><div class="grid"><div class="field"><label>Quantity</label><input id="saleQty" type="number" min="1" value="1"></div><div class="field"><label>&nbsp;</label><button class="primary" id="testSale" style="width:100%">बिक्री दर्ज करें</button></div></div><p class="note">अभी यह टेस्ट बिक्री है। आगे Billing module से जोड़ा जाएगा।</p></div></section>
+<section class="panel" id="moves"><div class="card"><h2>📥 नई खरीद / Stock Inward</h2><div class="field"><label>आइटम चुनें</label><select id="inItem"></select></div><div class="grid"><div class="field"><label>Quantity आई</label><input id="inQty" type="number" min="1" value="1"></div><div class="field"><label>Purchase Price प्रति पीस</label><input id="inPrice" type="number" min="0" step=".01"></div></div><button class="primary" id="inward">➕ स्टॉक जोड़ें</button></div>
+<div class="card"><h2>↩️ Customer Return</h2><div class="field"><label>आइटम चुनें</label><select id="retItem"></select></div><div class="field"><label>Return Quantity</label><input id="retQty" type="number" min="1" value="1"></div><div class="field"><label>Remark (वैकल्पिक)</label><input id="retRemark" placeholder="जैसे ग्राहक ने वापस किया"></div><button class="primary" id="returnBtn">↩️ Return दर्ज करें</button></div></section>
+<section class="panel" id="history"><div class="card"><h2>📜 Stock Movement History</h2><div class="field"><label>आइटम फ़िल्टर</label><select id="histFilter"><option value="">सभी आइटम</option></select></div><div id="historyList"></div></div></section>
+<section class="panel" id="backup"><div class="card"><h2>💾 Backup / Restore</h2><p class="note">Backup में Items और पूरी Stock History शामिल है। Backup file को Google Drive में रखने के लिए Share बटन से Drive चुनें। यह अभी automatic cloud sync नहीं है।</p><div class="actions"><button class="primary" id="shareBackup">☁️ Drive / Share Backup</button><button class="secondary" id="export">⬇️ Download</button></div><button class="secondary" id="importBtn" style="width:100%;margin-top:8px">⬆️ Restore Backup</button><input type="file" id="importFile" accept="application/json" hidden><p class="note" id="backupInfo"></p></div></section>
+<section class="panel" id="reports"><div class="card"><h2>📊 Inventory Report</h2><div id="report"></div></div><div class="card"><h2>💰 Profit (टेस्ट बिक्री)</h2><p class="note">इस टेस्ट वर्ज़न में बिक्री के समय दर्ज Purchase Price और Sale Price के अंतर से gross profit निकलेगा। वास्तविक बिलिंग में discount, return और अन्य adjustments जोड़कर final profit बनेगा।</p><div id="profitReport"></div></div></section>
 </main>
-
-<div id="scanner"><div class="scanbox"><h2>📷 Barcode Scan</h2><p class="note" style="color:#d7e4dc">Barcode को कैमरे के सामने रखें।</p><video id="video" playsinline></video><p id="scanStatus" class="note" style="color:white">कैमरा शुरू हो रहा है...</p><button class="secondary" id="closeScan" style="width:100%">✖ बंद करें</button></div></div>
-<div id="toast"></div>
+<div id="scanner"><div class="inner"><h2>📷 Barcode Scan</h2><p class="note" style="color:#d7e4dc">Barcode को कैमरे के सामने रखें।</p><video id="video" playsinline></video><p id="scanStatus" class="note" style="color:white">कैमरा शुरू हो रहा है...</p><button class="secondary" id="closeScan" style="width:100%">✖ बंद करें</button></div></div><div id="toast"></div>
 <script>
-const KEY='navvastram_inventory_v1';
-let products=JSON.parse(localStorage.getItem(KEY)||'[]'), editId=null, scanTarget=null, stream=null, scanLoop=null;
-const $=id=>document.getElementById(id);
-const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-function save(){localStorage.setItem(KEY,JSON.stringify(products));render()}
-function toast(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2400)}
-function switchTab(t){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===t));if(t==='list')render()}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
-function resetForm(){editId=null;$('itemForm').reset();$('formTitle').textContent='नया आइटम जोड़ें';$('saveBtn').textContent='💾 आइटम सेव करें'}
-$('resetBtn').onclick=resetForm;
-$('itemForm').onsubmit=e=>{
- e.preventDefault();
- const barcode=$('barcode').value.trim();
- if(barcode && products.some(p=>p.barcode===barcode&&p.id!==editId)){toast('यह Barcode किसी दूसरे आइटम को दिया गया है');return}
- const old=products.find(p=>p.id===editId);
- const p={id:editId||String(Date.now()),name:$('name').value.trim(),purchase:+$('purchase').value,sale:+$('sale').value,mrp:+$('mrp').value,qty:+$('qty').value,barcode,remark:$('remark').value.trim(),created:old?.created||new Date().toISOString(),updated:new Date().toISOString()};
- if(old)products=products.map(x=>x.id===editId?p:x);else products.unshift(p);
- save();resetForm();toast(old?'आइटम अपडेट हो गया':'आइटम सेव हो गया');switchTab('list');
-};
-function render(){
- $('totalItems').textContent=products.length;$('totalQty').textContent=products.reduce((a,p)=>a+p.qty,0);
- $('lowStock').textContent=products.filter(p=>p.qty<=5).length;
- const q=($('search')?.value||'').toLowerCase();
- const filtered=products.filter(p=>p.name.toLowerCase().includes(q)||(p.barcode||'').toLowerCase().includes(q));
- $('items').innerHTML=filtered.length?filtered.map(p=>`<div class="item">
- <div class="itemtop"><div class="itemname">${esc(p.name)}</div><span class="pill">${p.qty<=5?'कम स्टॉक':'स्टॉक: '+p.qty}</span></div>
- <div class="itemmeta">Barcode: <b>${esc(p.barcode||'अभी assign नहीं')}</b><br>Purchase: ${money(p.purchase)} &nbsp; Sale: ${money(p.sale)} &nbsp; MRP: ${money(p.mrp)}<br>${p.remark?esc(p.remark):''}</div>
- <div class="actions"><button class="secondary" onclick="editItem('${p.id}')">✏️ Edit</button><button class="secondary" onclick="adjustQty('${p.id}')">➕/➖ Stock</button><button class="danger" onclick="deleteItem('${p.id}')">🗑️ Delete</button></div></div>`).join(''):'<p class="note">कोई आइटम नहीं मिला। पहले आइटम जोड़ें।</p>';
- $('backupInfo').textContent=`अभी ${products.length} आइटम इस डिवाइस में सेव हैं।`;
-}
+const KEY='navvastram_inventory_v2';let products=[],moves=[],editId=null,scanTarget=null,stream=null,raf=null;
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[]}}catch(e){}
+const $=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+function persist(){localStorage.setItem(KEY,JSON.stringify({products,moves}));render()}
+function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-window.editItem=id=>{const p=products.find(x=>x.id===id);if(!p)return;editId=id;for(const k of ['name','purchase','sale','mrp','qty','barcode','remark'])$(k).value=p[k]??'';$('formTitle').textContent='आइटम एडिट करें';$('saveBtn').textContent='💾 बदलाव सेव करें';switchTab('add');window.scrollTo(0,0)};
-window.deleteItem=id=>{if(confirm('क्या यह आइटम हटाना चाहते हैं?')){products=products.filter(p=>p.id!==id);save();toast('आइटम हटा दिया गया')}};
-window.adjustQty=id=>{const p=products.find(x=>x.id===id);const v=prompt('स्टॉक में कितने पीस जोड़ें? घटाने के लिए - संख्या लिखें', '1');if(v===null)return;const n=Number(v);if(!Number.isInteger(n)||p.qty+n<0){toast('Quantity सही नहीं है');return}p.qty+=n;save();toast('स्टॉक अपडेट हो गया')};
-$('search').oninput=render;
-function scanInto(target){scanTarget=target;openScanner()}
-$('scanAssign').onclick=()=>scanInto('barcode');$('scanFind').onclick=()=>scanInto('search');$('scanSale').onclick=()=>scanInto('saleBarcode');
-async function openScanner(){
- $('scanner').style.display='block';$('scanStatus').textContent='कैमरा शुरू हो रहा है...';
- if(!('BarcodeDetector'in window)){ $('scanStatus').textContent='इस browser में built-in barcode scanner उपलब्ध नहीं है। Chrome के updated version में कोशिश करें या barcode नंबर manually लिखें।';return}
- try{
-  const detector=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});
-  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
-  $('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें...';
-  const tick=async()=>{if(!$('scanner').style.display||$('scanner').style.display==='none')return;try{const codes=await detector.detect($('video'));if(codes.length){const val=codes[0].rawValue;$(scanTarget).value=val;closeScanner();if(scanTarget==='search'){render()}else if(scanTarget==='saleBarcode'){toast('Barcode scan हो गया')}else{toast('Barcode नंबर assign करने के लिए आ गया')}}else scanLoop=requestAnimationFrame(tick)}catch(e){scanLoop=requestAnimationFrame(tick)}};
-  tick();
- }catch(e){$('scanStatus').textContent='कैमरा नहीं खुला। Browser permission में Camera Allow करें और app को HTTPS या localhost से खोलें।';}
+function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
+function tab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===t));render()}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+function reset(){editId=null;$('itemForm').reset();$('formTitle').textContent='नया आइटम जोड़ें';$('saveBtn').textContent='💾 सेव करें'}$('resetBtn').onclick=reset;
+$('itemForm').onsubmit=e=>{e.preventDefault();let bc=$('barcode').value.trim();if(bc&&products.some(p=>p.barcode===bc&&p.id!==editId)){toast('यह Barcode दूसरे आइटम को Assign है');return}
+let old=products.find(p=>p.id===editId),p={id:editId||String(Date.now()),name:$('name').value.trim(),purchase:+$('purchase').value,sale:+$('sale').value,mrp:+$('mrp').value,qty:+$('qty').value,barcode:bc,remark:$('remark').value.trim(),created:old?.created||new Date().toISOString()};
+if(old){let delta=p.qty-old.qty;Object.assign(old,p);if(delta)addMove(old,delta>0?'MANUAL_STOCK_IN':'MANUAL_STOCK_OUT',Math.abs(delta),p.purchase,'Edit form quantity adjustment')}else{products.unshift(p);if(p.qty)addMove(p,'OPENING_STOCK',p.qty,p.purchase,'Initial quantity')}
+persist();reset();toast('आइटम सेव हो गया');tab('stock')};
+function fillSelects(){let opts=products.map(p=>`<option value="${p.id}">${esc(p.name)}${p.barcode?' • '+esc(p.barcode):''}</option>`).join('');['inItem','retItem','histFilter'].forEach(id=>{let el=$(id),v=el.value;el.innerHTML=(id==='histFilter'?'<option value="">सभी आइटम</option>':'')+opts;if([...el.options].some(o=>o.value===v))el.value=v})}
+function render(){let qty=products.reduce((s,p)=>s+p.qty,0),val=products.reduce((s,p)=>s+p.qty*p.purchase,0);$('totalItems').textContent=products.length;$('totalQty').textContent=qty;$('stockValue').textContent=money(val);$('lowStock').textContent=products.filter(p=>p.qty<=5).length;
+let q=($('search')?.value||'').toLowerCase(),list=products.filter(p=>p.name.toLowerCase().includes(q)||(p.barcode||'').toLowerCase().includes(q));
+$('items').innerHTML=list.length?list.map(p=>`<div class="item"><div class="itemtop"><b class="itemname">${esc(p.name)}</b><span class="pill">${p.qty<=5?'कम स्टॉक':'स्टॉक: '+p.qty}</span></div><div class="itemmeta">Barcode: <b>${esc(p.barcode||'नहीं दिया')}</b><br>Purchase: ${money(p.purchase)} | Sale: ${money(p.sale)} | MRP: ${money(p.mrp)}<br>Stock Value: <b>${money(p.qty*p.purchase)}</b><br>${esc(p.remark)}</div><div class="actions"><button class="secondary" onclick="editItem('${p.id}')">✏️ Edit</button><button class="secondary" onclick="adjust('${p.id}')">± Stock</button><button class="secondary" onclick="showHistory('${p.id}')">📜 History</button><button class="danger" onclick="del('${p.id}')">Delete</button></div></div>`).join(''):'<p class="note">कोई आइटम नहीं मिला।</p>';
+fillSelects();$('backupInfo').textContent=`${products.length} आइटम • ${moves.length} Stock entries • कुल स्टॉक वैल्यू ${money(val)}`;
+let f=$('histFilter').value;let hm=moves.filter(m=>!f||m.productId===f);$('historyList').innerHTML=hm.length?`<table><tr><th>तारीख</th><th>आइटम / प्रकार</th><th>Qty</th><th>₹/पीस</th></tr>${hm.slice(0,150).map(m=>`<tr><td>${new Date(m.date).toLocaleDateString('en-IN')}</td><td>${esc(m.name)}<br><span class="note">${esc(m.type)} ${esc(m.remark)}</span></td><td>${m.type.includes('OUT')||m.type==='SALE'?'−':'+'}${m.qty}</td><td>${money(m.price)}</td></tr>`).join('')}</table>`:'<p class="note">अभी कोई history नहीं है।';
+$('report').innerHTML=`<p>कुल आइटम: <b>${products.length}</b></p><p>कुल Quantity: <b>${qty} पीस</b></p><p>Purchase Price के आधार पर Stock Value: <b>${money(val)}</b></p><p>कम स्टॉक आइटम: <b>${products.filter(p=>p.qty<=5).length}</b></p>`;
+let sales=moves.filter(m=>m.type==='SALE'),rev=sales.reduce((s,m)=>s+m.qty*m.salePrice,0),cost=sales.reduce((s,m)=>s+m.qty*m.price,0);$('profitReport').innerHTML=`<p>टेस्ट बिक्री की लागत: <b>${money(cost)}</b></p><p>टेस्ट बिक्री मूल्य: <b>${money(rev)}</b></p><p>अनुमानित Gross Profit: <b>${money(rev-cost)}</b></p>`;
 }
-function closeScanner(){if(scanLoop)cancelAnimationFrame(scanLoop);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('scanner').style.display='none'}
-$('closeScan').onclick=closeScanner;
-$('testSale').onclick=()=>{const code=$('saleBarcode').value.trim(),n=Number($('saleQty').value);const p=products.find(x=>x.barcode===code);if(!p){toast('इस Barcode का आइटम नहीं मिला');return}if(!Number.isInteger(n)||n<1){toast('Quantity सही डालें');return}if(p.qty<n){toast('इतना स्टॉक उपलब्ध नहीं है');return}p.qty-=n;save();toast(`${p.name}: ${n} पीस घटे`);$('saleBarcode').value='';$('saleQty').value=1};
-$('export').onclick=()=>{const blob=new Blob([JSON.stringify({app:'NavVastram Inventory',version:1,exported:new Date().toISOString(),products},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NavVastram-Inventory-Backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);toast('Backup डाउनलोड शुरू हुआ')};
-$('importBtn').onclick=()=>$('importFile').click();
-$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.products))throw Error();if(confirm('Restore करने पर मौजूदा inventory replace हो जाएगी। जारी रखें?')){products=d.products;save();toast('Backup restore हो गया')}}catch(err){toast('Backup file सही नहीं है')}e.target.value=''};
-if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
-render();
-</script>
-</body></html>
+window.editItem=id=>{let p=products.find(x=>x.id===id);if(!p)return;editId=id;['name','purchase','sale','mrp','qty','barcode','remark'].forEach(k=>$(k).value=p[k]??'');$('formTitle').textContent='आइटम एडिट करें';$('saveBtn').textContent='💾 बदलाव सेव करें';tab('add')};
+window.del=id=>{if(confirm('आइटम हटाएँ? History बनी रहेगी।')){products=products.filter(p=>p.id!==id);persist();toast('आइटम हटाया गया')}};
+window.adjust=id=>{let p=products.find(x=>x.id===id),n=Number(prompt('स्टॉक में कितने पीस जोड़ें? घटाने के लिए - संख्या लिखें','1'));if(!Number.isInteger(n)||!n||p.qty+n<0)return toast('Quantity सही नहीं है');p.qty+=n;addMove(p,n>0?'MANUAL_STOCK_IN':'MANUAL_STOCK_OUT',Math.abs(n),p.purchase);persist()};
+window.showHistory=id=>{tab('history');$('histFilter').value=id;render()};
+$('search').oninput=render;$('histFilter').onchange=render;
+$('inItem').onchange=()=>{let p=products.find(x=>x.id===$('inItem').value);if(p)$('inPrice').value=p.purchase};
+$('inward').onclick=()=>{let p=products.find(x=>x.id===$('inItem').value),n=+$('inQty').value,price=+$('inPrice').value;if(!p||!Number.isInteger(n)||n<1||price<0)return toast('जानकारी सही भरें');p.qty+=n;p.purchase=price;addMove(p,'PURCHASE_IN',n,price);persist();toast('नई खरीद स्टॉक में जुड़ गई')};
+$('returnBtn').onclick=()=>{let p=products.find(x=>x.id===$('retItem').value),n=+$('retQty').value;if(!p||!Number.isInteger(n)||n<1)return toast('जानकारी सही भरें');p.qty+=n;addMove(p,'CUSTOMER_RETURN_IN',n,p.purchase,$('retRemark').value);persist();$('retRemark').value='';toast('Return स्टॉक में जुड़ गया')};
+$('testSale').onclick=()=>{let code=$('saleBarcode').value.trim(),n=+$('saleQty').value,p=products.find(x=>x.barcode===code);if(!p)return toast('Barcode का आइटम नहीं मिला');if(!Number.isInteger(n)||n<1||p.qty<n)return toast('Quantity या उपलब्ध स्टॉक सही नहीं है');p.qty-=n;addMove(p,'SALE',n,p.purchase,'Test sale');moves[0].salePrice=p.sale;persist();$('saleBarcode').value='';$('saleQty').value=1;toast('स्टॉक घट गया')};
+function scan(target){scanTarget=target;openScan()}$('scanAssign').onclick=()=>scan('barcode');$('scanFind').onclick=()=>scan('search');$('scanSale').onclick=()=>scan('saleBarcode');
+async function openScan(){$('scanner').style.display='block';if(!('BarcodeDetector'in window)){$('scanStatus').textContent='इस browser में BarcodeDetector नहीं है। Barcode manually डालें या updated Chrome try करें।';return}try{let det=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});$('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें';const tick=async()=>{if($('scanner').style.display==='none')return;try{let c=await det.detect($('video'));if(c.length){$(scanTarget).value=c[0].rawValue;closeScan();if(scanTarget==='search')render();toast('Barcode scan हो गया')}else raf=requestAnimationFrame(tick)}catch(e){raf=requestAnimationFrame(tick)}};tick()}catch(e){$('scanStatus').textContent='Camera permission Allow करें। HTTPS जरूरी है।'}}
+function closeScan(){if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('scanner').style.display='none'}$('closeScan').onclick=closeScan;
+function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:2,exported:new Date().toISOString(),products,moves},null,2)],{type:'application/json'})}
+function filename(){return 'NavVastram-Inventory-Backup-'+new Date().toISOString().slice(0,10)+'.json'}
+$('export').onclick=()=>{let u=URL.createObjectURL(backupBlob()),a=document.createElement('a');a.href=u;a.download=filename();a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('Backup डाउनलोड शुरू हुआ')};
+$('shareBackup').onclick=async()=>{let f=new File([backupBlob()],filename(),{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'NavVastram Inventory Backup'});toast('Share sheet खुल गया; Drive चुनें')}catch(e){}}else{$('export').click();toast('Download हुआ; Drive में upload करें')}};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();
+</script></body></html>
