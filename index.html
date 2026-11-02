@@ -109,7 +109,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],dealers=[],dealerEntries=[],selectedDealerId=null,selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[];dealers=[];dealerEntries=[]}}catch(e){}
 const $=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-function persist(){localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries}));render();renderLedger()}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries}));render();renderLedger();renderDealers();return true}catch(e){toast('डेटा सेव नहीं हो पाया। फोन में जगह खाली करें और Backup जाँचें।');return false}}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
