@@ -1,8 +1,8 @@
-NavVastram Inventory V15 – Item Discount & Bill Discount Allocation
+NavVastram Inventory V16 – Item Discount & Bill Discount Allocation
 
 Files: index.html, manifest.json, sw.js, README.txt
 
-V15 changes:
+V16 changes:
 - Invoice summary label changed from CURRENT BILL to BILL TOTAL.
 - Every invoice item shows its MRP discount percentage directly below MRP.
 - Customer Discount percentage is shown in brackets beside the discount amount.
@@ -18,3 +18,5 @@ Update instructions:
 3. Upload and replace all four files directly in the GitHub repository root.
 4. Commit changes, then reopen the website. Do not clear browser site data.
 5. Test with (a) one item where MRP > selling rate and (b) one item where MRP = selling rate. Apply a customer discount and verify only the first item's rate reduces.
+
+V16: Fixed effective item discount percentage, proportional paise-level bill discount allocation, final discount amount/percentage display, and MRP column spacing.
