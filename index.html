@@ -48,7 +48,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 </div>
 <div class="tabs">
  <button class="tab active" data-tab="add">➕ आइटम</button><button class="tab" data-tab="stock">📦 स्टॉक</button><button class="tab" data-tab="moves">🔄 आवक/रिटर्न</button>
- <button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button><button class="tab" data-tab="dealers">🏭 Dealer खाता</button><button class="tab" data-tab="billing">🧾 Billing</button>
+ <button class="tab" data-tab="purchase">🧾 Purchase Register</button><button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button><button class="tab" data-tab="dealers">🏭 Dealer खाता</button><button class="tab" data-tab="billing">🧾 Billing</button>
 </div>
 <section class="panel active" id="add"><div class="card"><h2 id="formTitle">नया आइटम जोड़ें</h2>
 <form id="itemForm">
@@ -77,6 +77,19 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 <div class="field"><label>Return Quantity</label><input id="retQty" type="number" min="1" placeholder="पीस की संख्या"></div>
 <div class="field"><label>Remark (वैकल्पिक)</label><input id="retRemark" placeholder="जैसे ग्राहक ने वापस किया"></div>
 <button class="primary" id="returnBtn" style="width:100%">↩️ Return स्टॉक अपडेट करें</button><p class="note">सफल Return के बाद Barcode, Quantity और Remark साफ हो जाएँगे।</p></div></section>
+<section class="panel" id="purchase">
+ <div class="card"><h2>🧾 नई Purchase Invoice दर्ज करें</h2>
+  <div class="field"><label>Wholesaler / Supplier *</label><select id="purchaseSupplier"><option value="">पहले Dealer चुनें</option></select><p class="note">Supplier पहले से Dealer खाते में होना चाहिए। नया Supplier जोड़ने के लिए Dealer खाता खोलें।</p></div>
+  <div class="grid"><div class="field"><label>Invoice Number</label><input id="purchaseInvoiceNo" placeholder="जैसे INV-1025"></div><div class="field"><label>Purchase Date *</label><input id="purchaseDate" type="date"></div></div>
+  <div id="purchaseLines"></div>
+  <button class="secondary" id="purchaseAddLine" type="button" style="width:100%;margin:5px 0 12px">＋ दूसरा Item जोड़ें</button>
+  <div class="item"><div class="itemtop"><b>Invoice Total</b><b id="purchaseTotal">₹0</b></div><div class="grid" style="margin-top:10px"><div class="field"><label>Paid Amount (₹)</label><input id="purchasePaid" type="number" min="0" step=".01" value="0"></div><div class="field"><label>Payment Mode</label><select id="purchasePayMode"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Other</option></select></div></div><div class="itemtop"><span>बाकी देय राशि</span><b id="purchaseDue">₹0</b></div></div>
+  <div class="field"><label>Remark (वैकल्पिक)</label><input id="purchaseRemark" placeholder="जैसे कपड़ा खरीद / बिल विवरण"></div>
+  <button class="primary" id="purchaseSave" type="button" style="width:100%">💾 Purchase Save करें</button>
+  <p class="note">Save करने पर हर Item का Stock बढ़ेगा और Supplier Ledger में Invoice की खरीद तथा भुगतान दर्ज होगा।</p>
+ </div>
+ <div class="card"><h2>📚 Purchase Register History</h2><div id="purchaseHistory"></div></div>
+</section>
 <section class="panel" id="history"><div class="card"><h2>📜 Stock Movement History</h2><div class="field"><label>आइटम फ़िल्टर</label><select id="histFilter"><option value="">सभी आइटम</option></select></div><div id="historyList"></div></div></section>
 <section class="panel" id="backup"><div class="card"><h2>💾 Backup / Restore</h2><p class="note">Backup में Items और पूरी Stock History शामिल है। Backup file को Google Drive में रखने के लिए Share बटन से Drive चुनें। यह अभी automatic cloud sync नहीं है।</p><div class="actions"><button class="primary" id="shareBackup">☁️ Drive / Share Backup</button><button class="secondary" id="export">⬇️ Download</button></div><button class="secondary" id="importBtn" style="width:100%;margin-top:8px">⬆️ Restore Backup</button><input type="file" id="importFile" accept="application/json" hidden><p class="note" id="backupInfo"></p></div></section>
 <section class="panel" id="reports"><div class="card"><h2>📊 Inventory Report</h2><div id="report"></div></div><div class="card"><h2>💰 Profit (टेस्ट बिक्री)</h2><p class="note">इस टेस्ट वर्ज़न में बिक्री के समय दर्ज Purchase Price और Sale Price के अंतर से gross profit निकलेगा। वास्तविक बिलिंग में discount, return और अन्य adjustments जोड़कर final profit बनेगा।</p><div id="profitReport"></div></div></section>
@@ -189,10 +202,10 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 </main>
 <div id="scanner"><div class="inner"><h2>📷 Barcode Scan</h2><p class="note" style="color:#d7e4dc">Barcode को कैमरे के सामने रखें।</p><video id="video" playsinline></video><p id="scanStatus" class="note" style="color:white">कैमरा शुरू हो रहा है...</p><button class="secondary" id="closeScan" style="width:100%">✖ बंद करें</button></div></div><div id="toast"></div>
 <script>
-const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],dealers=[],dealerEntries=[],bills=[],billCart=[],selectedDealerId=null,selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
-try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];bills=d.bills||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[];dealers=[];dealerEntries=[]}}catch(e){}
+const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],dealers=[],dealerEntries=[],bills=[],purchaseRecords=[],purchaseDraft=[],billCart=[],selectedDealerId=null,selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];bills=d.bills||[];purchaseRecords=d.purchaseRecords||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[];dealers=[];dealerEntries=[];purchaseRecords=[]}}catch(e){}
 const $=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2}),wholeMoney=n=>'₹'+Math.round(Number(n)||0).toLocaleString('en-IN');
-function persist(){try{localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,bills}));render();renderLedger();renderDealers();return true}catch(e){toast('डेटा सेव नहीं हो पाया। फोन में जगह खाली करें और Backup जाँचें।');return false}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,bills,purchaseRecords}));render();renderLedger();renderDealers();renderPurchaseHistory();return true}catch(e){toast('डेटा सेव नहीं हो पाया। फोन में जगह खाली करें और Backup जाँचें।');return false}}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
@@ -229,11 +242,11 @@ $('testSale').onclick=()=>{let code=$('saleBarcode').value.trim(),n=+$('saleQty'
 function scan(target){scanTarget=target;openScan()}$('scanAssign').onclick=()=>scan('barcode');$('scanFind').onclick=()=>scan('search');$('scanSale').onclick=()=>scan('saleBarcode');$('scanInward').onclick=()=>scan('inBarcode');$('scanReturn').onclick=()=>scan('retBarcode');$('scanBill').onclick=()=>scan('billBarcode');
 async function openScan(){$('scanner').style.display='block';if(!('BarcodeDetector'in window)){$('scanStatus').textContent='इस browser में BarcodeDetector नहीं है। Barcode manually डालें या updated Chrome try करें।';return}try{let det=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});$('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें';const tick=async()=>{if($('scanner').style.display==='none')return;try{let c=await det.detect($('video'));if(c.length){$(scanTarget).value=c[0].rawValue;closeScan();if(scanTarget==='search')render();if(scanTarget==='inBarcode')showMatched('inBarcode','inFound');if(scanTarget==='retBarcode')showMatched('retBarcode','retFound');if(scanTarget==='billBarcode')addToBill();toast('Barcode scan हो गया')}else raf=requestAnimationFrame(tick)}catch(e){raf=requestAnimationFrame(tick)}};tick()}catch(e){$('scanStatus').textContent='Camera permission Allow करें। HTTPS जरूरी है।'}}
 function closeScan(){if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('scanner').style.display='none'}$('closeScan').onclick=closeScan;
-function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:10,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,bills},null,2)],{type:'application/json'})}
+function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:10,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,bills,purchaseRecords},null,2)],{type:'application/json'})}
 function filename(){return 'NavVastram-Inventory-Backup-'+new Date().toISOString().slice(0,10)+'.json'}
 $('export').onclick=()=>{let u=URL.createObjectURL(backupBlob()),a=document.createElement('a');a.href=u;a.download=filename();a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('Backup डाउनलोड शुरू हुआ')};
 $('shareBackup').onclick=async()=>{let f=new File([backupBlob()],filename(),{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'NavVastram Inventory Backup'});toast('Share sheet खुल गया; Drive चुनें')}catch(e){}}else{$('export').click();toast('Download हुआ; Drive में upload करें')}};
-$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];bills=d.bills||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];bills=d.bills||[];purchaseRecords=d.purchaseRecords||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
 
 // Voice fuzzy matching: rank saved names and let the user confirm the correct result.
 function voiceNorm(value){return String(value||'').toLocaleLowerCase('hi-IN').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[़ँंः]/g,'').replace(/[।.,\-_/\\]/g,' ').replace(/[^\p{L}\p{N}]+/gu,'').trim()}
@@ -294,6 +307,7 @@ $('voiceSearch').onclick=()=>startVoiceMatch(spoken=>{const v=$('ledgerVillage')
 
 function renderDealers(){
  if(!$('dealerList'))return;
+ if($('purchaseSupplier'))purchaseSupplierOptions();
  $('dealerSelect').innerHTML='<option value="">Dealer चुनें</option>'+dealers.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
  if(selectedDealerId&&dealers.some(d=>d.id===selectedDealerId))$('dealerSelect').value=selectedDealerId;
  const bal=d=>Number(d.opening||0)+dealerEntries.filter(e=>e.dealerId===d.id).reduce((a,e)=>a+(e.kind==='PURCHASE'?e.amount:-e.amount),0);
@@ -312,6 +326,31 @@ $('addDealer').onclick=()=>{let name=$('dealerName').value.trim(),phone=$('deale
 $('dealerCredit').onclick=()=>{let d=dealers.find(x=>x.id===selectedDealerId),amount=+$('dealerPurchase').value;if(!d||!Number.isFinite(amount)||amount<=0)return toast('Dealer चुनें और सही खरीद राशि भरें');dealerEntries.push({id:'DE'+Date.now(),dealerId:d.id,kind:'PURCHASE',amount,date:todayISO(),remark:$('dealerPurchaseRemark').value.trim(),created:Date.now()});$('dealerPurchase').value='';$('dealerPurchaseRemark').value='';persist();showDealerLedger(d);toast('Dealer खरीद दर्ज हुई')};
 $('dealerPay').onclick=()=>{let d=dealers.find(x=>x.id===selectedDealerId),amount=+$('dealerPayment').value;if(!d||!Number.isFinite(amount)||amount<=0)return toast('Dealer चुनें और सही भुगतान राशि भरें');dealerEntries.push({id:'DE'+Date.now(),dealerId:d.id,kind:'PAYMENT',amount,date:todayISO(),mode:$('dealerPayMode').value,remark:$('dealerPaymentRemark').value.trim(),created:Date.now()});$('dealerPayment').value='';$('dealerPaymentRemark').value='';persist();showDealerLedger(d);toast('Dealer भुगतान दर्ज हुआ')};
 
+
+// Purchase Register: one supplier invoice can contain multiple existing inventory items.
+function purchaseSupplierOptions(){let sel=$('purchaseSupplier'),old=sel.value;sel.innerHTML='<option value="">Wholesaler चुनें</option>'+dealers.map(d=>`<option value="${esc(d.id)}">${esc(d.name)}</option>`).join('');if(dealers.some(d=>d.id===old))sel.value=old}
+function purchaseAddLine(){purchaseDraft.push({productId:'',qty:'',rate:''});renderPurchaseLines()}
+function renderPurchaseLines(){let host=$('purchaseLines');if(!host)return;host.innerHTML=purchaseDraft.map((r,i)=>`<div class="item"><div class="itemtop"><b>Item ${i+1}</b><button type="button" class="danger" onclick="purchaseRemoveLine(${i})">हटाएँ</button></div><div class="field"><label>Item चुनें *</label><select onchange="purchaseSetLine(${i},'productId',this.value)"><option value="">Inventory Item चुनें</option>${products.map(p=>`<option value="${esc(p.id)}" ${r.productId===p.id?'selected':''}>${esc(p.name)}${p.barcode?' • '+esc(p.barcode):''}</option>`).join('')}</select></div><div class="grid"><div class="field"><label>Quantity *</label><input type="number" min="1" step="1" value="${esc(r.qty)}" placeholder="पीस" onchange="purchaseSetLine(${i},'qty',this.value)"></div><div class="field"><label>Purchase Rate / पीस *</label><input type="number" min="0" step=".01" value="${esc(r.rate)}" placeholder="₹ रेट" onchange="purchaseSetLine(${i},'rate',this.value)"></div></div><div class="itemmeta">Line Amount: <b>${money((Number(r.qty)||0)*(Number(r.rate)||0))}</b></div></div>`).join('');purchaseTotals()}
+window.purchaseSetLine=(i,k,v)=>{if(!purchaseDraft[i])return;purchaseDraft[i][k]=v;if(k==='productId'){let p=products.find(x=>x.id===v);if(p)purchaseDraft[i].rate=String(Number(p.purchase)||0)}renderPurchaseLines()};
+window.purchaseRemoveLine=i=>{purchaseDraft.splice(i,1);renderPurchaseLines()};
+function purchaseTotals(){let total=purchaseDraft.reduce((a,r)=>a+(Number(r.qty)||0)*(Number(r.rate)||0),0),paid=Math.max(0,Number($('purchasePaid')?.value)||0);$('purchaseTotal').textContent=money(total);$('purchaseDue').textContent=money(Math.max(0,total-paid));return {total,paid,due:total-paid}}
+$('purchaseAddLine').onclick=purchaseAddLine;$('purchasePaid').oninput=purchaseTotals;$('purchaseSupplier').onfocus=purchaseSupplierOptions;
+$('purchaseSave').onclick=()=>{
+ let dealerId=$('purchaseSupplier').value,d=dealers.find(x=>x.id===dealerId),date=$('purchaseDate').value||todayISO(),invoiceNo=$('purchaseInvoiceNo').value.trim(),remark=$('purchaseRemark').value.trim(),{total,paid,due}=purchaseTotals();
+ if(!d)return toast('पहले Wholesaler चुनें');if(!purchaseDraft.length)return toast('कम से कम एक Item जोड़ें');
+ let lines=[];for(let r of purchaseDraft){let p=products.find(x=>x.id===r.productId),qty=Number(r.qty),rate=Number(r.rate);if(!p)return toast('हर लाइन में सही Inventory Item चुनें');if(!Number.isInteger(qty)||qty<1||!Number.isFinite(rate)||rate<0)return toast('हर Item की Quantity और Rate सही भरें');lines.push({productId:p.id,name:p.name,qty,rate,amount:Number((qty*rate).toFixed(2))})}
+ if(!Number.isFinite(paid)||paid<0||paid>total)return toast('Paid Amount कुल Invoice से अधिक नहीं हो सकता');
+ let id='P'+Date.now(),record={id,dealerId,dealerName:d.name,invoiceNo,date,remark,total:Number(total.toFixed(2)),paid:Number(paid.toFixed(2)),due:Number(due.toFixed(2)),payMode:$('purchasePayMode').value,items:lines,created:Date.now()};
+ // Update inventory and purchase movement for every line.
+ lines.forEach(line=>{let p=products.find(x=>x.id===line.productId);p.qty=Number(p.qty||0)+line.qty;p.purchase=line.rate;addMove(p,'PURCHASE_IN',line.qty,line.rate,'Purchase '+(invoiceNo||id));});
+ // Supplier payable and paid amount are linked to the same invoice.
+ dealerEntries.push({id:'DE'+Date.now(),dealerId,kind:'PURCHASE',amount:record.total,date,remark:'Invoice '+(invoiceNo||id)+' • '+lines.length+' Items',invoiceId:id,created:Date.now()});
+ if(paid>0)dealerEntries.push({id:'DE'+(Date.now()+1),dealerId,kind:'PAYMENT',amount:record.paid,date,mode:record.payMode,remark:'Payment for Invoice '+(invoiceNo||id),invoiceId:id,created:Date.now()+1});
+ purchaseRecords.unshift(record);if(!persist())return;
+ purchaseDraft=[];$('purchaseInvoiceNo').value='';$('purchasePaid').value='0';$('purchaseRemark').value='';$('purchaseDate').value=todayISO();renderPurchaseLines();renderPurchaseHistory();purchaseSupplierOptions();toast('Purchase Invoice सेव हुई और Stock अपडेट हो गया');
+};
+function renderPurchaseHistory(){let host=$('purchaseHistory');if(!host)return;host.innerHTML=purchaseRecords.map(r=>`<div class="item"><div class="itemtop"><b>${esc(r.dealerName)}</b><b>${money(r.total)}</b></div><div class="itemmeta">Date: ${esc(r.date)} | Invoice: ${esc(r.invoiceNo||'-')}<br>${(r.items||[]).map(x=>`${esc(x.name)}: ${x.qty} × ${money(x.rate)} = ${money(x.amount)}`).join('<br>')}<br>Paid: ${money(r.paid)} | Due: <b>${money(r.due)}</b></div></div>`).join('')||'<p class="note">अभी कोई Purchase Invoice दर्ज नहीं है।</p>'}
+$('purchaseDate').value=todayISO();purchaseSupplierOptions();purchaseAddLine();renderPurchaseHistory();
 
 // Smart Billing V9 - Nagad / Khata customer flow
 let billMode=null,billSelectedCustomer=null;
@@ -490,7 +529,7 @@ function invoiceCanvas(b){
  totalRow('Subtotal:',b.subtotal,false,22);
  totalRow('Customer Discount ('+Number(b.billDiscountPercent||0).toFixed(2)+'%):',b.discount,false,22);
  totalRow('BILL TOTAL:',b.grand,true,25);
- totalRow('Gross Profit:',b.profit??(items.reduce((z,x)=>z+Number(x.profitAmount||0),0)),false,21);
+ // Gross Profit is intentionally excluded from the customer-facing printed invoice.
  if(b.mode==='KHATA'){
    totalRow('Amount Received:',b.amountReceived||0,false,22);
    totalRow('Previous Balance:',b.previousBalance||0,false,22);
@@ -516,5 +555,5 @@ window.printBill=printBill;window.shareBillWhatsApp=shareBillWhatsApp;
 $('billHistoryMonth')?.addEventListener('change',renderBillHistory);$('showAllBills')?.addEventListener('click',()=>{$('billHistoryMonth').value='';renderBillHistory()});
 refreshBillCustomer();renderBillCart();renderBillHistory();
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();renderLedger();renderDealers();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
 </script></body></html>
