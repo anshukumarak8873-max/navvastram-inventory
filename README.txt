@@ -1,24 +1,19 @@
-NavVastram Inventory V21 – Manual Quick Entry
+NavVastram Inventory V22 – Thermal Bill Maker Manual Layout
 
-V21 changes requested for Manual Billing:
-- Removed the Item Name / Design field completely.
-- Selecting a clothing category image immediately opens the MRP, Quantity, Discount and Rate section.
-- The selected category is used as the manual item name in the bill.
-- Discount buttons and their two-column arrangement are unchanged from V20.
+Manual Billing layout updated to follow the original Thermal Bill Maker flow:
+- Image category selection and selected-category strip.
+- MRP and Quantity in one row.
+- Original 3-column discount button layout: 30% OFF full-width, NET full-width, then remaining discount buttons in 3 columns.
+- Pressing a discount button immediately adds the manual item to the bill, like the original Thermal Bill Maker.
+- No separate Item Name input or visible Rate/Purchase Price form section.
 
-Existing V20 functionality and data storage are preserved, including barcode/manual shared cart, ledgers, profit calculations, NET rules and inventory behavior.
-
-Profit rules:
-- Normal Manual item purchase price = MRP × 0.50 × 0.91.
-- NET Manual item purchase price = MRP × 0.80.
-- Purchase price is based on MRP, not the selling rate.
+Profit and purchase-cost rules from the V21 inventory system are retained:
+- Normal manual item purchase cost = MRP × 50% × 91%.
+- NET manual item purchase cost = MRP × 80%.
 - Manual items do not reduce inventory stock.
-- NET items are exempt from bill-level discount allocation.
-
-Files: index.html, manifest.json, sw.js, README.txt
+- Barcode and manual items continue sharing the same bill cart.
 
 Update safely:
-1. Export a backup from the app first.
-2. Extract this ZIP.
-3. Replace all four files in the GitHub repository root.
-4. Commit changes and reopen the website. Do not clear browser site data.
+1. Export/keep a backup of your current app data first.
+2. Replace all four root files in your GitHub repository with these files.
+3. Do not clear browser site data; existing local storage key navvastram_inventory_v2 is retained.
