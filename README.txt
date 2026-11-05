@@ -1,11 +1,14 @@
-NavVastram Inventory V27 — Purchase Register Visibility + Gross Purchase Cost Report Fix
+NAVVASTRAM INVENTORY - V29
 
-Files: index.html, manifest.json, sw.js, README.txt
+Update includes:
+1. Prominent Purchase Register button on the home screen.
+2. Purchase Price and Profit are hidden by default and can be shown with the eye button.
+3. Purchase Price fields in Add Item, Stock Inward and Purchase Register are private by default.
+4. Purchase history financial amounts are hidden until the eye button is enabled.
+5. Customer-facing bill/thermal invoice remains free of Purchase Price and Profit.
+6. Existing localStorage key is preserved: navvastram_inventory_v2.
 
-Changes:
-1. Purchase Register is now available from a prominent button above the tabs and remains in the tab list. Opening it refreshes supplier choices, item rows, and purchase history.
-2. Report purchase cost uses each saved bill-line cost snapshot. For older bills missing costAmount, it falls back to purchaseCostPerUnit; manual lines use the established normal (MRP × 0.455) or NET (MRP × 0.80) formula; barcode lines fall back to current product purchase price only when no historical cost snapshot exists.
-3. Service worker now calls skipWaiting() so a new GitHub Pages version can activate without waiting for all old tabs to close.
-4. Existing localStorage key remains navvastram_inventory_v2.
+INSTALL: Upload/replace these four files in the GitHub repository ROOT: index.html, manifest.json, sw.js, README.txt.
+Do not delete browser site data. Take an in-app backup before updating. After GitHub Pages finishes deploying, close the app/browser tab and reopen the site; if needed use a private/incognito tab once to verify the new deployment.
 
-Important: Make a backup before replacing files. Do not clear browser site data. Supplier must first exist in Dealer account; purchase invoice supports multiple existing inventory items.
+Important: Purchase Register requires the Supplier to exist in Dealer Khata and the items to exist in Inventory before adding an invoice.
