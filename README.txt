@@ -1,14 +1,24 @@
-NAVVASTRAM INVENTORY - V29
+NAVVASTRAM INVENTORY - V31 HYBRID BILL SCANNER (IMAGE + PDF)
 
-Update includes:
-1. Prominent Purchase Register button on the home screen.
-2. Purchase Price and Profit are hidden by default and can be shown with the eye button.
-3. Purchase Price fields in Add Item, Stock Inward and Purchase Register are private by default.
-4. Purchase history financial amounts are hidden until the eye button is enabled.
-5. Customer-facing bill/thermal invoice remains free of Purchase Price and Profit.
-6. Existing localStorage key is preserved: navvastram_inventory_v2.
+New in V31:
+1. Purchase Register bill scanner accepts JPG, PNG, and PDF files.
+2. Multi-page PDF is supported: each page is rendered in the browser and OCR-processed sequentially (maximum 30 pages per PDF).
+3. Browser OCR uses Tesseract.js with English + Hindi recognition.
+4. PDF rendering uses PDF.js. First use requires internet to load PDF.js, its worker, Tesseract.js, and OCR language data.
+5. OCR text remains editable. Existing invoice number/date and possible item-line extraction workflow is retained.
+6. OCR is only a draft aid. User must review and correct supplier, invoice, item, quantity, rate, and payment before saving.
+7. OCR does not automatically update stock or supplier ledger. Only the existing Purchase Save action does that.
+8. JPG/PNG and Manual Purchase Entry remain supported if PDF/OCR fails.
+9. Existing localStorage key is preserved: navvastram_inventory_v2.
 
-INSTALL: Upload/replace these four files in the GitHub repository ROOT: index.html, manifest.json, sw.js, README.txt.
-Do not delete browser site data. Take an in-app backup before updating. After GitHub Pages finishes deploying, close the app/browser tab and reopen the site; if needed use a private/incognito tab once to verify the new deployment.
+LIMITATIONS:
+- This is browser-side OCR, not a paid generative-AI API. No guaranteed extraction of complex tables, handwriting, blurry scans, or unusual invoice layouts.
+- Scanned PDFs are processed page by page; large PDFs may take several minutes and use phone memory. Limit: 30 pages per PDF.
+- First use and language-data download require internet. Manual Entry remains available offline.
+- Item-line matching is best-effort. New articles should be created in Inventory first, then selected in Purchase Register.
 
-Important: Purchase Register requires the Supplier to exist in Dealer Khata and the items to exist in Inventory before adding an invoice.
+INSTALL:
+1. Take an in-app Backup first.
+2. Extract this ZIP and upload/replace all four files in the GitHub repository ROOT: index.html, manifest.json, sw.js, README.txt.
+3. Wait for GitHub Pages deployment, then close and reopen the site.
+4. Do NOT clear browser site data. The existing inventory data key is unchanged.
