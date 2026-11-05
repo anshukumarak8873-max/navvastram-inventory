@@ -1,31 +1,25 @@
-NavVastram Inventory V19 – Manual Billing + Profit Calculation
+NavVastram Inventory V20 – Exact Manual Billing Theme
 
-Included files (upload all four to the GitHub repository root):
-- index.html
-- manifest.json
-- sw.js
-- README.txt
+V20 is based on the four-file V19 app package and reuses the user's earlier Thermal Bill Maker interface.
 
-V19 changes:
-1. Billing now has Barcode System and Manual System. Both add items to the same cart; switching systems does not clear the cart.
-2. Manual item entry includes clothing categories, item/design name, MRP, quantity, discount buttons and editable selling rate.
-3. Discount buttons are arranged as requested: 30%, 0% NET directly below, then 10%, 15%, 20%, 25%, 35%; separate side group: 40%, 45%, 50%.
-4. The discount percentage below MRP updates from the actual editable selling rate.
-5. Normal manual item purchase price = MRP × 0.50 × 0.91. Example: MRP ₹1,000 -> Purchase Price ₹455, even if the selling rate is ₹400.
-6. NET manual item purchase price = MRP × 0.80. NET items are exempt from both item/bill-level discount allocation.
-7. Entering a customer final amount automatically calculates the grand-total discount. The discount is allocated proportionally only to eligible non-NET items. If the requested final amount would reduce the NET items, the app warns and does not save the bill.
-8. Manual items do not reduce inventory stock. Barcode-linked items continue to reduce stock as before.
-9. Each bill stores purchase cost, final item amount and profit. The Reports page shows billing revenue, purchase cost and gross profit.
-10. Existing localStorage key `navvastram_inventory_v2` is unchanged; customer/dealer ledgers and existing inventory data are retained.
+Manual System changes:
+- Replaced the plain category dropdown with the same image-button category grid.
+- Reused the original category names and embedded clothing images.
+- Reused the original green/gold visual palette, image tile borders, selected tile treatment, and responsive grid.
+- The selected category is shown clearly below the image buttons.
+- Existing editable Rate, discount buttons, purchase-price rules, NET exemption, shared Barcode/Manual cart, ledgers, profit calculation and stock behavior remain intact.
+
+Profit rules:
+- Normal Manual item purchase price = MRP × 0.50 × 0.91.
+- NET Manual item purchase price = MRP × 0.80.
+- Purchase price is based on MRP, never on the entered selling rate.
+- Manual items do not reduce inventory stock.
+- NET items are exempt from bill-level discount allocation.
+
+Files: index.html, manifest.json, sw.js, README.txt
 
 Update:
-1. Export a backup from the app before updating.
+1. Export a backup in the app first.
 2. Extract this ZIP.
-3. Upload and replace the four files in the GitHub repository root.
-4. Commit changes and reopen the site. Do not clear browser site data.
-
-Suggested tests:
-- Normal manual item: MRP ₹1,000, choose 30%, then change Rate to ₹400. Purchase Price should remain ₹455 and base discount should show 60%.
-- NET item: MRP ₹1,000, NET button. Purchase Price should be ₹800; grand-total discount must not reduce this line.
-- Five eligible items at ₹100 each: enter Final Amount ₹450. BILL TOTAL should be ₹450 and ₹50 discount should be allocated across eligible items.
-- Mix Barcode and Manual items in one cart. Manual item should not reduce inventory; Barcode item should continue to reduce inventory.
+3. Upload and replace all four files in the GitHub repository root.
+4. Commit changes and reopen the website. Do not clear browser site data.
