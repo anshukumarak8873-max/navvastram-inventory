@@ -17,3 +17,10 @@ Important:
 - Back up before replacing files. Do not clear browser site data.
 - Customer payment allocation to bills uses oldest-first FIFO. Payments not matched to invoice balances remain as unapplied account balance.
 - This is a cash-realization management view, not statutory accounting or tax advice.
+
+
+V33 Invoice display fixes:
+- Removed dashed separators between individual invoice items on the 80mm thermal/PNG invoice.
+- Manual category item names are saved once; existing duplicate names such as “साड़ी - साड़ी” are normalized for customer invoices.
+- Item amounts and invoice totals are displayed in rounded whole rupees without decimals.
+- Existing localStorage key and cash-realized profit logic are preserved.
