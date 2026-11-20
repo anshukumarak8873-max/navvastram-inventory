@@ -66,6 +66,23 @@ body.workflow-focus .home-main-btn small{font-size:10px}
 /* V43 Mahajan workflow */
 .mahajan-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mahajan-actions button{min-height:62px;font-weight:800;border-radius:13px}.mahajan-screen[hidden],#mahajanBillwiseArea[hidden]{display:none!important}.mahajan-highlight{border:1px solid #e3c66c;background:#fff8df;color:#5b4611;border-radius:12px;padding:12px;margin:10px 0;font-weight:700}.cheque-alert{border:1px solid #e2b94e;background:#fff7dc;border-radius:12px;padding:11px;margin:9px 0}.cheque-alert strong{color:#8a5700}.cheque-cleared{border:1px solid #b9d7c1;background:#f0faf2;border-radius:12px;padding:10px;margin:8px 0}.mahajan-ledger-table{width:100%;border-collapse:collapse;font-size:12px}.mahajan-ledger-table th,.mahajan-ledger-table td{border-bottom:1px solid #e5ebe6;padding:7px 5px;text-align:left;vertical-align:top}@media(max-width:380px){.mahajan-actions button{font-size:13px;padding:9px 5px}}
 
+
+/* V44 household, shop expense, staff salary and savings manager */
+.money-home{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.money-tile{padding:13px 9px;border:1px solid #dce5de;border-radius:13px;background:#f7faf7;text-align:left;color:#173b32;font-weight:850;min-height:66px}
+.money-tile small{display:block;font-weight:550;color:#66736d;margin-top:4px}
+.money-subview[hidden]{display:none!important}
+.money-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.money-kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.money-kpi .stat{border:1px solid #e5ebe6}
+.money-record{border:1px solid #e2e9e4;border-radius:11px;padding:10px;margin:8px 0;background:#fff}
+.money-record strong{color:#173b32}
+.money-chip{display:inline-block;border-radius:20px;padding:3px 8px;background:#edf3ee;color:#173b32;font-size:11px;font-weight:750}
+.money-alert{background:#fff8e8;border:1px solid #ead7a8;border-radius:11px;padding:10px;margin:8px 0}
+.money-section-title{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.money-section-title h3{font-size:14px;margin:0 0 9px}
+.money-back{margin-bottom:10px;width:100%}
+@media(max-width:380px){.money-form-grid{grid-template-columns:1fr}.money-tile{font-size:13px}}
 </style></head><body>
 <header><h1>🧾 NavVastram Inventory</h1><p>स्टॉक, बारकोड, खरीद, बिक्री और हिस्ट्री</p></header>
 <main>
@@ -81,7 +98,7 @@ body.workflow-focus .home-main-btn small{font-size:10px}
 </div>
 <div class="home-secondary-tools"><button type="button" class="private-toggle" id="togglePrivateFinancial" aria-pressed="false">👁️ निजी Purchase Price / Profit दिखाएँ</button></div>
 <div class="tabs">
- <button class="tab" data-tab="purchase">🧾 Purchase Register</button><button class="tab" data-tab="add">➕ आइटम</button><button class="tab" data-tab="stock">📦 स्टॉक</button><button class="tab" data-tab="moves">🔄 आवक/रिटर्न</button><button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button><button class="tab" data-tab="dealers">🏭 महाजन खाता</button><button class="tab" data-tab="billing">🧾 Billing</button>
+ <button class="tab" data-tab="purchase">🧾 Purchase Register</button><button class="tab" data-tab="add">➕ आइटम</button><button class="tab" data-tab="stock">📦 स्टॉक</button><button class="tab" data-tab="moves">🔄 आवक/रिटर्न</button><button class="tab" data-tab="history">📜 हिस्ट्री</button><button class="tab" data-tab="backup">💾 बैकअप</button><button class="tab" data-tab="reports">📊 रिपोर्ट</button><button class="tab" data-tab="ledger">👥 ग्राहक खाता</button><button class="tab" data-tab="dealers">🏭 महाजन खाता</button><button class="tab" data-tab="billing">🧾 Billing</button><button class="tab" data-tab="money">💰 खर्च / बचत</button>
 </div>
 <section class="panel active" id="add"><div class="card"><h2 id="formTitle">नया आइटम जोड़ें</h2>
 <form id="itemForm">
@@ -312,17 +329,110 @@ body.workflow-focus .home-main-btn small{font-size:10px}
   <button class="primary full-btn" id="addDealer">महाजन सेव करें</button>
  </div>
 </section>
+
+<section class="panel" id="money">
+ <div class="card">
+  <h2>💰 खर्च, स्टाफ और बचत का पूरा हिसाब</h2>
+  <p class="note">घर और दुकान के खर्च अलग रहेंगे। दुकान से घर या स्टाफ को निकला कपड़ा Inventory से घटेगा और Purchase Price पर दर्ज होगा।</p>
+  <div class="money-kpi">
+   <div class="stat"><b id="moneyMonthExpense">₹0</b><span>इस महीने कुल खर्च</span></div>
+   <div class="stat"><b id="moneyMonthSaving">₹0</b><span>इस महीने जमा / बचत</span></div>
+   <div class="stat"><b id="moneyHomeExpense">₹0</b><span>घर का खर्च</span></div>
+   <div class="stat"><b id="moneyShopExpense">₹0</b><span>दुकान का खर्च</span></div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>कौन-सा हिसाब खोलना है?</h2>
+  <div class="money-home">
+   <button class="money-tile" data-money-view="expense">🏠 घर / दुकान खर्च<small>Cash और कपड़े का खर्च</small></button>
+   <button class="money-tile" data-money-view="staff">👨‍💼 Staff Salary<small>कई बार में भुगतान और कपड़ा</small></button>
+   <button class="money-tile" data-money-view="fixed">📅 Fixed खर्च<small>EMI, CC Interest, Bank Charges</small></button>
+   <button class="money-tile" data-money-view="saving">🏦 Deposit / Savings<small>Post Office और SIP</small></button>
+   <button class="money-tile" data-money-view="history" style="grid-column:1/-1">📚 पूरा हिसाब / History<small>तारीख के अनुसार सभी एंट्री</small></button>
+  </div>
+ </div>
+ <div class="card money-subview" id="moneyExpenseView" hidden>
+  <button class="secondary money-back" data-money-back>← वापस</button>
+  <h2>🏠 घर / दुकान खर्च दर्ज करें</h2>
+  <div class="money-form-grid">
+   <div class="field"><label>खर्च किसका है?</label><select id="expType"><option value="HOME">घर खर्च</option><option value="SHOP">दुकान खर्च</option></select></div>
+   <div class="field"><label>खर्च का प्रकार</label><select id="expMode"><option value="CASH">नकद / Bank भुगतान</option><option value="CLOTH">दुकान से कपड़ा</option></select></div>
+   <div class="field"><label>तारीख</label><input id="expDate" type="date"></div>
+   <div class="field"><label>Category</label><input id="expCategory" placeholder="जैसे राशन, बिजली, Festival"></div>
+  </div>
+  <div id="expCashFields">
+   <div class="field"><label>रकम (₹)</label><input id="expAmount" type="number" min="0" step=".01" placeholder="कितना खर्च हुआ"></div>
+  </div>
+  <div id="expClothFields" hidden>
+   <div class="field"><label>कपड़े का Barcode Scan / Enter</label><div class="scanrow"><input id="expBarcode" placeholder="Barcode नंबर"><button class="secondary" id="scanExpCloth" type="button">📷 Scan</button></div></div>
+   <button class="secondary full-btn" id="findExpCloth" type="button">🔎 Barcode से आइटम खोजें</button>
+   <div id="expFound" class="note" style="margin:8px 0"></div>
+   <div class="money-form-grid"><div class="field"><label>Item Name (Manual भी)</label><input id="expClothName" placeholder="कपड़े का नाम"></div><div class="field"><label>Quantity</label><input id="expClothQty" type="number" min=".01" step=".01" value="1"></div><div class="field"><label>Purchase Price / पीस (₹)</label><input id="expClothPrice" type="number" min="0" step=".01" placeholder="Barcode पर अपने-आप आएगा"></div></div>
+   <p class="note">Barcode वाले कपड़े में Purchase Price अपने-आप आएगा और स्टॉक घटेगा। Manual कपड़ा लिखने पर नाम, Quantity और Purchase Price भरें; Manual entry Inventory का स्टॉक नहीं घटाएगी।</p>
+  </div>
+  <div class="field"><label>विवरण / Remark</label><textarea id="expRemark" placeholder="खर्च का कारण"></textarea></div>
+  <button class="primary full-btn" id="saveExpense">💾 खर्च Save करें</button>
+ </div>
+ <div class="card money-subview" id="moneyStaffView" hidden>
+  <button class="secondary money-back" data-money-back>← वापस</button>
+  <h2>👨‍💼 Staff Salary और Payment हिसाब</h2>
+  <div class="field"><label>Staff का नाम</label><input id="staffName" placeholder="Staff का नाम"></div>
+  <div class="money-form-grid">
+   <div class="field"><label>Entry का प्रकार</label><select id="staffEntryType"><option value="DUE">Salary जोड़ें (देय)</option><option value="CASH">Cash / Bank से Salary भुगतान</option><option value="CLOTH">कपड़ा देकर Salary भुगतान</option></select></div>
+   <div class="field"><label>तारीख</label><input id="staffDate" type="date"></div>
+  </div>
+  <div id="staffCashFields"><div class="field"><label>रकम (₹)</label><input id="staffAmount" type="number" min="0" step=".01" placeholder="रकम"></div></div>
+  <div id="staffClothFields" hidden>
+   <div class="field"><label>कपड़े का Barcode Scan / Enter</label><div class="scanrow"><input id="staffBarcode" placeholder="Barcode नंबर"><button class="secondary" id="scanStaffCloth" type="button">📷 Scan</button></div></div>
+   <button class="secondary full-btn" id="findStaffCloth" type="button">🔎 Barcode से आइटम खोजें</button>
+   <div id="staffFound" class="note" style="margin:8px 0"></div>
+   <div class="money-form-grid"><div class="field"><label>Item Name (Manual भी)</label><input id="staffClothName" placeholder="कपड़े का नाम"></div><div class="field"><label>Quantity</label><input id="staffClothQty" type="number" min=".01" step=".01" value="1"></div><div class="field"><label>Purchase Price / पीस (₹)</label><input id="staffClothPrice" type="number" min="0" step=".01" placeholder="Barcode पर अपने-आप आएगा"></div></div>
+   <p class="note">कपड़े का भुगतान Purchase Price के आधार पर Salary में जमा होगा। Barcode Item का स्टॉक घटेगा। Manual entry में आप Purchase Price खुद भर सकते हैं।</p>
+  </div>
+  <div class="field"><label>Remark</label><textarea id="staffRemark" placeholder="जैसे November Salary / Advance"></textarea></div>
+  <button class="primary full-btn" id="saveStaffEntry">💾 Staff Entry Save करें</button>
+  <div class="money-alert"><b>Staff Balance</b><div id="staffBalanceView">Staff चुनें / नाम लिखें।</div><p class="note">Salary Due में से Cash और कपड़े के भुगतान घटेंगे। एक ही Staff के नाम की spelling हर बार समान रखें।</p></div>
+  <h3>Staff का पूरा हिसाब</h3><div id="staffHistory"></div>
+ </div>
+ <div class="card money-subview" id="moneyFixedView" hidden>
+  <button class="secondary money-back" data-money-back>← वापस</button>
+  <h2>📅 Fixed / Bank खर्च</h2>
+  <div class="money-alert"><b>हर महीने की Fixed Entry</b><br>EMI: ₹24,157 — हर महीने की 5 तारीख<br>CC Account Interest: महीने की आखिरी तारीख — रकम आप manually डालेंगे।<br>Bank Charges: जब भी कटे, manually दर्ज करें।</div>
+  <div class="field"><label>खर्च का प्रकार</label><select id="fixedType"><option value="EMI">EMI — ₹24,157 (महीने की 5 तारीख)</option><option value="CC_INTEREST">CC Account Interest (Manual)</option><option value="BANK_CHARGES">Bank Charges (Manual)</option><option value="OTHER">अन्य Fixed / Bank खर्च</option></select></div>
+  <div class="money-form-grid"><div class="field"><label>तारीख</label><input id="fixedDate" type="date"></div><div class="field"><label>रकम (₹)</label><input id="fixedAmount" type="number" min="0" step=".01" value="24157"></div></div>
+  <div class="field"><label>Remark</label><input id="fixedRemark" placeholder="जैसे November CC Interest"></div>
+  <button class="primary full-btn" id="saveFixed">💾 Fixed खर्च Save करें</button>
+  <div id="fixedMonthStatus"></div>
+ </div>
+ <div class="card money-subview" id="moneySavingView" hidden>
+  <button class="secondary money-back" data-money-back>← वापस</button>
+  <h2>🏦 Deposit / Savings दर्ज करें</h2>
+  <div class="money-alert"><b>Monthly Targets</b><br>Post Office Deposit: ₹9,000 / महीना<br>SIP: ₹5,000 / महीना<br>इन्हें खर्च नहीं, Savings / Deposit के रूप में अलग रखा जाएगा।</div>
+  <div class="field"><label>Deposit का प्रकार</label><select id="savingType"><option value="POST_OFFICE">Post Office — ₹9,000 Monthly</option><option value="SIP">SIP — ₹5,000 Monthly</option><option value="OTHER">अन्य Deposit / Savings</option></select></div>
+  <div class="money-form-grid"><div class="field"><label>तारीख</label><input id="savingDate" type="date"></div><div class="field"><label>जमा रकम (₹)</label><input id="savingAmount" type="number" min="0" step=".01" value="9000"></div></div>
+  <div class="field"><label>Remark</label><input id="savingRemark" placeholder="Transaction ID / विवरण"></div>
+  <button class="primary full-btn" id="saveSaving">💾 Deposit Save करें</button>
+  <div id="savingMonthStatus"></div>
+ </div>
+ <div class="card money-subview" id="moneyHistoryView" hidden>
+  <button class="secondary money-back" data-money-back>← वापस</button>
+  <h2>📚 खर्च / Staff / Savings History</h2>
+  <div class="money-form-grid"><div class="field"><label>From</label><input id="moneyFrom" type="date"></div><div class="field"><label>To</label><input id="moneyTo" type="date"></div></div>
+  <button class="secondary full-btn" id="filterMoneyHistory">🔎 हिसाब देखें</button>
+  <div id="moneyHistory"></div>
+ </div>
+</section>
 </main>
 <div id="scanner"><div class="inner"><h2>📷 Barcode Scan</h2><p class="note" style="color:#d7e4dc">Barcode को कैमरे के सामने रखें।</p><video id="video" playsinline></video><p id="scanStatus" class="note" style="color:white">कैमरा शुरू हो रहा है...</p><button class="secondary" id="closeScan" style="width:100%">✖ बंद करें</button></div></div><div id="toast"></div>
 <script>
-const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],dealers=[],dealerEntries=[],chequeRecords=[],bills=[],purchaseRecords=[],purchaseDraft=[],billCart=[],selectedDealerId=null,selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
-try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];chequeRecords=d.chequeRecords||[];bills=d.bills||[];purchaseRecords=d.purchaseRecords||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[];dealers=[];dealerEntries=[];purchaseRecords=[]}}catch(e){}
+const KEY='navvastram_inventory_v2';let products=[],moves=[],villages=[],customers=[],ledgerEntries=[],dealers=[],dealerEntries=[],chequeRecords=[],bills=[],purchaseRecords=[],expenseRecords=[],staffRecords=[],savingRecords=[],purchaseDraft=[],billCart=[],selectedDealerId=null,selectedCustomerId=null,editId=null,scanTarget=null,stream=null,raf=null;
+try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d){products=d.products||[];moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];chequeRecords=d.chequeRecords||[];bills=d.bills||[];purchaseRecords=d.purchaseRecords||[];expenseRecords=d.expenseRecords||[];staffRecords=d.staffRecords||[];savingRecords=d.savingRecords||[]}else{const old=JSON.parse(localStorage.getItem('navvastram_inventory_v1')||'[]');products=old;moves=[];villages=[];customers=[];ledgerEntries=[];dealers=[];dealerEntries=[];purchaseRecords=[]}}catch(e){}
 const $=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2}),wholeMoney=n=>'₹'+Math.round(Number(n)||0).toLocaleString('en-IN');
-function persist(){try{localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,chequeRecords,bills,purchaseRecords}));render();renderLedger();renderDealers();renderPurchaseHistory();return true}catch(e){toast('डेटा सेव नहीं हो पाया। फोन में जगह खाली करें और Backup जाँचें।');return false}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,chequeRecords,bills,purchaseRecords,expenseRecords,staffRecords,savingRecords}));render();renderLedger();renderDealers();renderPurchaseHistory();return true}catch(e){toast('डेटा सेव नहीं हो पाया। फोन में जगह खाली करें और Backup जाँचें।');return false}}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
-function tab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===t));document.body.classList.toggle('workflow-focus',t==='billing'||t==='ledger');render();if(t==='purchase'){purchaseSupplierOptions();renderPurchaseLines();renderPurchaseHistory();$('purchasePanelTitle')?.focus?.()}if(t==='billing'||t==='ledger'){requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:'smooth'});let target=document.getElementById(t);target?.scrollIntoView({block:'start',behavior:'smooth'})})}}
+function tab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===t));document.body.classList.toggle('workflow-focus',t==='billing'||t==='ledger'||t==='money');render();if(t==='purchase'){purchaseSupplierOptions();renderPurchaseLines();renderPurchaseHistory()}requestAnimationFrame(()=>{let target=document.getElementById(t);if(target){window.scrollTo({top:0,behavior:'smooth'});target.scrollIntoView({block:'start',behavior:'smooth'})}})}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 $('homeCreateBill').onclick=()=>tab('billing');$('homeCustomerLedger').onclick=()=>tab('ledger');
 
@@ -369,13 +479,13 @@ $('inward').onclick=()=>{let p=products.find(x=>x.id===inwardProductId),n=+$('in
 $('returnBtn').onclick=()=>{let p=products.find(x=>x.id===returnProductId),n=+$('retQty').value;if(!p)return toast('पहले सही Barcode से आइटम खोजें');if(!Number.isInteger(n)||n<1)return toast('Return Quantity सही भरें');p.qty+=n;addMove(p,'CUSTOMER_RETURN_IN',n,p.purchase,$('retRemark').value);persist();returnProductId=null;$('retBarcode').value='';$('retQty').value='';$('retRemark').value='';$('retFound').textContent='';toast('✅ Return स्टॉक अपडेट हो गया। अगली एंट्री करें।')};
 $('testSale').onclick=()=>{let code=$('saleBarcode').value.trim(),n=+$('saleQty').value,p=products.find(x=>x.barcode===code);if(!p)return toast('Barcode का आइटम नहीं मिला');if(!Number.isInteger(n)||n<1||p.qty<n)return toast('Quantity या उपलब्ध स्टॉक सही नहीं है');p.qty-=n;addMove(p,'SALE',n,p.purchase,'Test sale');moves[0].salePrice=p.sale;persist();$('saleBarcode').value='';$('saleQty').value=1;toast('स्टॉक घट गया')};
 function scan(target){scanTarget=target;openScan()}$('scanAssign').onclick=()=>scan('barcode');$('scanFind').onclick=()=>scan('search');$('scanSale').onclick=()=>scan('saleBarcode');$('scanInward').onclick=()=>scan('inBarcode');$('scanReturn').onclick=()=>scan('retBarcode');$('scanBill').onclick=()=>scan('billBarcode');
-async function openScan(){$('scanner').style.display='block';if(!('BarcodeDetector'in window)){$('scanStatus').textContent='इस browser में BarcodeDetector नहीं है। Barcode manually डालें या updated Chrome try करें।';return}try{let det=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});$('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें';const tick=async()=>{if($('scanner').style.display==='none')return;try{let c=await det.detect($('video'));if(c.length){$(scanTarget).value=c[0].rawValue;closeScan();if(scanTarget==='search')render();if(scanTarget==='inBarcode')showMatched('inBarcode','inFound');if(scanTarget==='retBarcode')showMatched('retBarcode','retFound');if(scanTarget==='billBarcode')addToBill();toast('Barcode scan हो गया')}else raf=requestAnimationFrame(tick)}catch(e){raf=requestAnimationFrame(tick)}};tick()}catch(e){$('scanStatus').textContent='Camera permission Allow करें। HTTPS जरूरी है।'}}
+async function openScan(){$('scanner').style.display='block';if(!('BarcodeDetector'in window)){$('scanStatus').textContent='इस browser में BarcodeDetector नहीं है। Barcode manually डालें या updated Chrome try करें।';return}try{let det=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e','itf','qr_code']});stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});$('video').srcObject=stream;await $('video').play();$('scanStatus').textContent='Barcode कैमरे के सामने रखें';const tick=async()=>{if($('scanner').style.display==='none')return;try{let c=await det.detect($('video'));if(c.length){$(scanTarget).value=c[0].rawValue;closeScan();if(scanTarget==='search')render();if(scanTarget==='inBarcode')showMatched('inBarcode','inFound');if(scanTarget==='retBarcode')showMatched('retBarcode','retFound');if(scanTarget==='billBarcode')addToBill();$(scanTarget)?.dispatchEvent(new Event('change'));toast('Barcode scan हो गया')}else raf=requestAnimationFrame(tick)}catch(e){raf=requestAnimationFrame(tick)}};tick()}catch(e){$('scanStatus').textContent='Camera permission Allow करें। HTTPS जरूरी है।'}}
 function closeScan(){if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('scanner').style.display='none'}$('closeScan').onclick=closeScan;
-function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:10,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,chequeRecords,bills,purchaseRecords},null,2)],{type:'application/json'})}
+function backupBlob(){return new Blob([JSON.stringify({app:'NavVastram Inventory',version:10,exported:new Date().toISOString(),products,moves,villages,customers,ledgerEntries,dealers,dealerEntries,chequeRecords,bills,purchaseRecords,expenseRecords,staffRecords,savingRecords},null,2)],{type:'application/json'})}
 function filename(){return 'NavVastram-Inventory-Backup-'+new Date().toISOString().slice(0,10)+'.json'}
 $('export').onclick=()=>{let u=URL.createObjectURL(backupBlob()),a=document.createElement('a');a.href=u;a.download=filename();a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('Backup डाउनलोड शुरू हुआ')};
 $('shareBackup').onclick=async()=>{let f=new File([backupBlob()],filename(),{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'NavVastram Inventory Backup'});toast('Share sheet खुल गया; Drive चुनें')}catch(e){}}else{$('export').click();toast('Download हुआ; Drive में upload करें')}};
-$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];chequeRecords=d.chequeRecords||[];bills=d.bills||[];purchaseRecords=d.purchaseRecords||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
+$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.products))throw 0;if(confirm('Restore से मौजूदा डेटा replace होगा। जारी रखें?')){products=d.products;moves=d.moves||[];villages=d.villages||[];customers=d.customers||[];ledgerEntries=d.ledgerEntries||[];dealers=d.dealers||[];dealerEntries=d.dealerEntries||[];chequeRecords=d.chequeRecords||[];bills=d.bills||[];purchaseRecords=d.purchaseRecords||[];expenseRecords=d.expenseRecords||[];staffRecords=d.staffRecords||[];savingRecords=d.savingRecords||[];persist();toast('Backup restore हो गया')}}catch(x){toast('Backup file सही नहीं है')}e.target.value=''};
 
 // Voice fuzzy matching: rank saved names and let the user confirm the correct result.
 function voiceNorm(value){return String(value||'').toLocaleLowerCase('hi-IN').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[़ँंः]/g,'').replace(/[।.,\-_/\\]/g,' ').replace(/[^\p{L}\p{N}]+/gu,'').trim()}
@@ -787,5 +897,33 @@ $('billHistoryMonth')?.addEventListener('change',renderBillHistory);$('showAllBi
 $('toggleBillHistory')?.addEventListener('click',()=>{const box=$('billHistoryContent'),btn=$('toggleBillHistory'),open=box.hidden;box.hidden=!open;btn.setAttribute('aria-expanded',String(open));btn.querySelector('span').textContent=open?'📚 बिल हिस्ट्री बंद करें':'📚 बिल हिस्ट्री खोलें';$('billHistoryChevron').textContent=open?'⌃':'⌄';if(open)renderBillHistory()});
 refreshBillCustomer();renderBillCart();renderBillHistory();
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=43').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
+
+// V44 Money Manager: separate household/shop expenses, staff salary and savings.
+let expenseClothProductId=null,staffClothProductId=null;
+const moneyToday=()=>new Date().toISOString().slice(0,10);
+function moneyMonth(){return moneyToday().slice(0,7)}
+function setMoneyDates(){['expDate','staffDate','fixedDate','savingDate','moneyTo'].forEach(id=>{if($(id)&&!$(id).value)$(id).value=moneyToday()});if($('moneyFrom')&&!$('moneyFrom').value)$('moneyFrom').value=moneyMonth()+'-01'}
+function moneyView(v){document.querySelectorAll('.money-subview').forEach(x=>x.hidden=true);let id={expense:'moneyExpenseView',staff:'moneyStaffView',fixed:'moneyFixedView',saving:'moneySavingView',history:'moneyHistoryView'}[v];if(id)$(id).hidden=false;setMoneyDates();renderMoney();requestAnimationFrame(()=>$(id)?.scrollIntoView({block:'start',behavior:'smooth'}))}
+document.querySelectorAll('[data-money-view]').forEach(b=>b.onclick=()=>moneyView(b.dataset.moneyView));
+document.querySelectorAll('[data-money-back]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.money-subview').forEach(x=>x.hidden=true);$('money').scrollIntoView({block:'start',behavior:'smooth'})});
+$('expMode').onchange=()=>{let cloth=$('expMode').value==='CLOTH';$('expCashFields').hidden=cloth;$('expClothFields').hidden=!cloth};
+$('staffEntryType').onchange=()=>{let cloth=$('staffEntryType').value==='CLOTH';$('staffCashFields').hidden=cloth;$('staffClothFields').hidden=!cloth;$('staffAmount').closest('.field').hidden=cloth};
+function findMoneyCloth(barcodeId,foundId,which){let code=$(barcodeId).value.trim(),p=products.find(x=>x.barcode&&x.barcode===code);if(!code){$(foundId).textContent='पहले Barcode scan / enter करें।';return null}if(!p){$(foundId).textContent='❌ Barcode Inventory में नहीं मिला। Manual entry कर सकते हैं।';if(which==='expense')expenseClothProductId=null;else staffClothProductId=null;return null}if(which==='expense')expenseClothProductId=p.id;else staffClothProductId=p.id;let nameId=which==='expense'?'expClothName':'staffClothName',priceId=which==='expense'?'expClothPrice':'staffClothPrice';$(nameId).value=p.name;$(priceId).value=Number(p.purchase||0);$(foundId).innerHTML=`<div class="item"><b>✅ ${esc(p.name)}</b><br>Available Stock: ${p.qty}<br>Purchase Price: <b>${money(p.purchase)}</b></div>`;return p}
+$('findExpCloth').onclick=()=>findMoneyCloth('expBarcode','expFound','expense');$('expBarcode').onchange=()=>findMoneyCloth('expBarcode','expFound','expense');$('scanExpCloth').onclick=()=>scan('expBarcode');
+$('findStaffCloth').onclick=()=>findMoneyCloth('staffBarcode','staffFound','staff');$('staffBarcode').onchange=()=>findMoneyCloth('staffBarcode','staffFound','staff');$('scanStaffCloth').onclick=()=>scan('staffBarcode');
+function issueCloth(productId,name,qty,price,remark,entryType){let p=productId?products.find(x=>x.id===productId):null;if(p){if(!Number.isFinite(qty)||qty<=0||qty>p.qty)throw Error('स्टॉक में इतनी Quantity उपलब्ध नहीं है');price=Number(p.purchase)||0;p.qty=Number((p.qty-qty).toFixed(3));addMove(p,entryType==='STAFF'?'STAFF_CLOTH_OUT':'EXPENSE_CLOTH_OUT',qty,price,remark||'');}return {name,qty,price,total:Number((qty*price).toFixed(2)),productId:productId||null}}
+$('saveExpense').onclick=()=>{let type=$('expType').value,mode=$('expMode').value,date=$('expDate').value||moneyToday(),category=$('expCategory').value.trim()||'अन्य खर्च',remark=$('expRemark').value.trim(),rec={id:'EX'+Date.now(),type,mode,date,category,remark};if(mode==='CASH'){let amount=Number($('expAmount').value);if(!Number.isFinite(amount)||amount<=0)return toast('खर्च की रकम सही भरें');rec.amount=amount}else{let qty=Number($('expClothQty').value),price=Number($('expClothPrice').value),name=$('expClothName').value.trim();if(!name||!Number.isFinite(qty)||qty<=0||!Number.isFinite(price)||price<0)return toast('कपड़े का नाम, Quantity और Purchase Price भरें');try{Object.assign(rec,{cloth:issueCloth(expenseClothProductId,name,qty,price,remark,type)})}catch(e){return toast(e.message)}rec.amount=rec.cloth.total}expenseRecords.unshift(rec);if(!persist())return;['expAmount','expCategory','expRemark','expBarcode','expClothName','expClothPrice'].forEach(id=>$(id).value='');$('expClothQty').value=1;$('expFound').textContent='';expenseClothProductId=null;renderMoney();toast('खर्च सेव हो गया')};
+$('saveStaffEntry').onclick=()=>{let name=$('staffName').value.trim(),kind=$('staffEntryType').value,date=$('staffDate').value||moneyToday(),remark=$('staffRemark').value.trim();if(!name)return toast('Staff का नाम लिखें');let rec={id:'ST'+Date.now(),name,kind,date,remark,amount:0};if(kind==='CLOTH'){let qty=Number($('staffClothQty').value),price=Number($('staffClothPrice').value),item=$('staffClothName').value.trim();if(!item||!Number.isFinite(qty)||qty<=0||!Number.isFinite(price)||price<0)return toast('कपड़े का नाम, Quantity और Purchase Price भरें');try{rec.cloth=issueCloth(staffClothProductId,item,qty,price,remark,'STAFF');rec.amount=rec.cloth.total}catch(e){return toast(e.message)}}else{rec.amount=Number($('staffAmount').value);if(!Number.isFinite(rec.amount)||rec.amount<=0)return toast('रकम सही भरें')}staffRecords.unshift(rec);if(!persist())return;$('staffRemark').value='';$('staffAmount').value='';$('staffBarcode').value='';$('staffClothName').value='';$('staffClothPrice').value='';$('staffClothQty').value=1;$('staffFound').textContent='';staffClothProductId=null;renderMoney();toast('Staff का हिसाब सेव हो गया')};
+$('saveFixed').onclick=()=>{let kind=$('fixedType').value,date=$('fixedDate').value||moneyToday(),amount=Number($('fixedAmount').value),remark=$('fixedRemark').value.trim();if(!Number.isFinite(amount)||amount<=0)return toast('रकम सही भरें');if(kind==='EMI'&&date.slice(-2)!=='05'&&!confirm('EMI की तारीख 5 नहीं है। फिर भी सेव करें?'))return;expenseRecords.unshift({id:'FX'+Date.now(),type:'SHOP',mode:'CASH',date,category:kind,remark:remark||({EMI:'Monthly EMI',CC_INTEREST:'CC Account Interest',BANK_CHARGES:'Bank Charges'}[kind]||'Fixed Expense'),amount,fixed:true});if(!persist())return;$('fixedRemark').value='';renderMoney();toast('Fixed खर्च सेव हो गया')};
+$('fixedType').onchange=()=>{$('fixedAmount').value=$('fixedType').value==='EMI'?'24157':'';if($('fixedType').value==='EMI')$('fixedDate').value=moneyMonth()+'-05'};
+$('savingType').onchange=()=>{$('savingAmount').value=$('savingType').value==='POST_OFFICE'?'9000':$('savingType').value==='SIP'?'5000':''};
+$('saveSaving').onclick=()=>{let kind=$('savingType').value,date=$('savingDate').value||moneyToday(),amount=Number($('savingAmount').value);if(!Number.isFinite(amount)||amount<=0)return toast('जमा रकम सही भरें');savingRecords.unshift({id:'SV'+Date.now(),kind,date,amount,remark:$('savingRemark').value.trim()});if(!persist())return;$('savingRemark').value='';renderMoney();toast('Savings / Deposit सेव हो गया')};
+function staffTotals(name){let list=staffRecords.filter(x=>x.name.toLowerCase()===name.toLowerCase());let due=list.filter(x=>x.kind==='DUE').reduce((s,x)=>s+x.amount,0),paid=list.filter(x=>x.kind!=='DUE').reduce((s,x)=>s+x.amount,0);return {due,paid,balance:due-paid,list}}
+function renderMoney(){let m=moneyMonth(),ex=expenseRecords.filter(x=>String(x.date).startsWith(m)),sv=savingRecords.filter(x=>String(x.date).startsWith(m));let sum=(a)=>a.reduce((s,x)=>s+Number(x.amount||0),0);$('moneyMonthExpense').textContent=money(sum(ex));$('moneyMonthSaving').textContent=money(sum(sv));$('moneyHomeExpense').textContent=money(sum(ex.filter(x=>x.type==='HOME')));$('moneyShopExpense').textContent=money(sum(ex.filter(x=>x.type==='SHOP')));let names=[...new Set(staffRecords.map(x=>x.name))];$('staffHistory').innerHTML=names.length?names.map(n=>{let t=staffTotals(n);return `<div class="money-record"><b>${esc(n)}</b><br>Salary Due: ${money(t.due)} | Cash + कपड़ा भुगतान: ${money(t.paid)}<br><b>बाकी Salary: ${money(t.balance)}</b><details><summary>इस Staff की Entries (${t.list.length})</summary>${t.list.map(x=>`<p class="note">${x.date} • ${x.kind==='DUE'?'Salary Due':x.kind==='CASH'?'Cash Payment':'कपड़ा भुगतान'} • ${money(x.amount)} ${x.cloth?'• '+esc(x.cloth.name)+' × '+x.cloth.qty:''} ${esc(x.remark)}</p>`).join('')}</details></div>`}).join(''):'<p class="note">अभी कोई Staff Entry नहीं है।';$('staffBalanceView').textContent=names.length?names.map(n=>n+': '+money(staffTotals(n).balance)).join(' | '):'अभी कोई Staff Entry नहीं है।';$('fixedMonthStatus').innerHTML=`<p>इस महीने EMI दर्ज: <b>${ex.some(x=>x.category==='EMI')?'हाँ':'नहीं'}</b> | EMI Target: ₹24,157</p><p>CC Interest दर्ज: <b>${ex.some(x=>x.category==='CC_INTEREST')?'हाँ':'नहीं'}</b> | Bank Charges: ${money(sum(ex.filter(x=>x.category==='BANK_CHARGES')))}</p>`;$('savingMonthStatus').innerHTML=`<p>Post Office जमा: <b>${money(sum(sv.filter(x=>x.kind==='POST_OFFICE')))}</b> / ₹9,000</p><p>SIP जमा: <b>${money(sum(sv.filter(x=>x.kind==='SIP')))}</b> / ₹5,000</p>`;renderMoneyHistory()}
+function renderMoneyHistory(){let f=$('moneyFrom')?.value||moneyMonth()+'-01',t=$('moneyTo')?.value||moneyToday();let rows=[...expenseRecords.map(x=>({...x,group:'खर्च',label:(x.type==='HOME'?'घर':'दुकान')+' • '+x.category})),...staffRecords.map(x=>({...x,group:'Staff',label:x.name+' • '+(x.kind==='DUE'?'Salary Due':x.kind==='CASH'?'Cash Payment':'कपड़ा भुगतान')})),...savingRecords.map(x=>({...x,group:'Savings',label:x.kind==='POST_OFFICE'?'Post Office':x.kind==='SIP'?'SIP':'Other Deposit'}))].filter(x=>x.date>=f&&x.date<=t).sort((a,b)=>String(b.date).localeCompare(String(a.date)));$('moneyHistory').innerHTML=rows.length?rows.map(x=>`<div class="money-record"><div class="itemtop"><b>${esc(x.label)}</b><span class="money-chip">${esc(x.group)}</span></div><div>${x.date} • ${money(x.amount)} ${x.mode==='CLOTH'?'(Purchase Price पर)':''}</div>${x.cloth?`<div class="note">${esc(x.cloth.name)} × ${x.cloth.qty} @ ${money(x.cloth.price)}</div>`:''}<div class="note">${esc(x.remark||'')}</div></div>`).join(''):'<p class="note">इस अवधि में कोई एंट्री नहीं।</p>'}
+$('filterMoneyHistory').onclick=renderMoneyHistory;$('moneyFrom').onchange=renderMoneyHistory;$('moneyTo').onchange=renderMoneyHistory;
+$('staffName').onchange=()=>{let n=$('staffName').value.trim();if(n){let t=staffTotals(n);$('staffBalanceView').textContent='Salary Due: '+money(t.due)+' | Paid: '+money(t.paid)+' | बाकी: '+money(t.balance)}};
+setMoneyDates();renderMoney();
+
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=44').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
 </script></body></html>
