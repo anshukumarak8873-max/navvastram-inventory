@@ -946,8 +946,53 @@ $('expMode').onchange=()=>{let mode=$('expMode').value,cloth=mode==='CLOTH',cc=m
 
 function ccCycle(date){let d=new Date(date+'T12:00:00');if(isNaN(d))return null;let y=d.getFullYear(),m=d.getMonth(),day=d.getDate();let sy=y,sm=m;if(day<20){sm--;if(sm<0){sm=11;sy--}}let ey=sm,em=sm+1;if(em>11){em=0;ey++}let end=new Date(ey,em,19),due=new Date(end.getFullYear(),end.getMonth()+1,7);let fmt=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');return {key:fmt(new Date(sy,sm,20)).slice(0,7),start:fmt(new Date(sy,sm,20)),end:fmt(end),due:fmt(due),label:fmt(new Date(sy,sm,20))+' से '+fmt(end)}}
 function ccStatements(){let groups={};creditCardEntries.forEach(x=>{let c=ccCycle(x.date);if(!c)return;(groups[c.key]||(groups[c.key]={...c,entries:[],paid:0})).entries.push(x)});creditCardPayments.forEach(p=>{if(groups[p.statementKey])groups[p.statementKey].paid+=Number(p.amount||0)});return Object.values(groups).sort((a,b)=>b.start.localeCompare(a.start)).map(g=>({...g,total:g.entries.reduce((s,x)=>s+Number(x.amount||0),0),balance:Math.max(0,g.entries.reduce((s,x)=>s+Number(x.amount||0),0)-g.paid)}))}
-function renderCreditCard(){let gs=ccStatements();$('ccStatementList').innerHTML=gs.length?gs.map(g=>`<div class="money-record"><b>Statement: ${g.label}</b><br>Due Date: <b>${g.due}</b><br>घर खर्च: ${money(g.entries.filter(x=>x.category==='HOME').reduce((s,x)=>s+x.amount,0))} • दुकान खर्च: ${money(g.entries.filter(x=>x.category==='SHOP').reduce((s,x)=>s+x.amount,0))} • महाजन: ${money(g.entries.filter(x=>x.category==='MAHAJAN').reduce((s,x)=>s+x.amount,0))}<br>कुल बिल: <b>${money(g.total)}</b> • जमा: ${money(g.paid)} • बाकी: <b>${money(g.balance)}</b><div class="note">${g.entries.map(x=>x.date+' • '+(x.category==='HOME'?'घर खर्च':x.category==='SHOP'?'दुकान खर्च':'महाजन Payment')+' • '+money(x.amount)+(x.remark?' • '+esc(x.remark):'')).join('<br>')}</div></div>`).join(''):'<p class="note">अभी Credit Card खर्च दर्ज नहीं है।</p>';let sel=$('ccPayStatement');sel.innerHTML=gs.filter(g=>g.balance>0).map(g=>`<option value="${g.key}">${g.label} | बाकी ${money(g.balance)} | Due ${g.due}</option>`).join('')||'<option value="">कोई बकाया Statement नहीं</option>'; $('ccPaymentHistory').innerHTML=creditCardPayments.length?creditCardPayments.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(p=>`<div class="money-record">📅 ${p.date} • ${money(p.amount)} • Statement ${p.statementKey}${p.remark?' • '+esc(p.remark):''}</div>`).join(''):'<p class="note">Payment अभी दर्ज नहीं है।</p>'}
-$('saveCCPayment').onclick=()=>{let key=$('ccPayStatement').value,g=ccStatements().find(x=>x.key===key),date=$('ccPayDate').value||moneyToday(),amount=Number($('ccPayAmount').value);if(!g)return toast('पहले बकाया Statement चुनें');if(!Number.isFinite(amount)||amount<=0||amount>g.balance+0.009)return toast('Payment रकम बकाया रकम से अधिक या गलत है');let ratio=amount/(g.balance+g.paid||g.total),cats=['HOME','SHOP','MAHAJAN'];let totals={};cats.forEach(c=>totals[c]=g.entries.filter(x=>x.category===c).reduce((s,x)=>s+x.amount,0));creditCardPayments.unshift({id:'CCP'+Date.now(),statementKey:key,date,amount,remark:$('ccPayRemark').value.trim(),allocations:Object.fromEntries(cats.map(c=>[c,Number((totals[c]*ratio).toFixed(2))]))});if(!persist())return;cats.forEach(c=>{let v=Number((totals[c]*ratio).toFixed(2));if(v>0&&c!=='MAHAJAN')expenseRecords.unshift({id:'CCPOST'+Date.now()+c,type:c,mode:'CASH',date,category:'Credit Card Bill Payment — '+(c==='HOME'?'घर खर्च':'दुकान खर्च'),amount:v,remark:'Statement '+g.label+' का भुगतान',fromCreditCard:true})});if(!persist())return;$('ccPayAmount').value='';$('ccPayRemark').value='';$('ccPayDate').value=moneyToday();renderCreditCard();toast('Credit Card Payment सेव हो गया')};
+function renderCreditCard(){let gs=ccStatements();$('ccStatementList').innerHTML=gs.length?gs.map(g=>`<div class="money-record"><b>Statement: ${g.label}</b><br>Due Date: <b>${g.due}</b><br>घर खर्च: ${money(g.entries.filter(x=>x.category==='HOME').reduce((s,x)=>s+x.amount,0))} • दुकान खर्च: ${money(g.entries.filter(x=>x.category==='SHOP').reduce((s,x)=>s+x.amount,0))} • महाजन: ${money(g.entries.filter(x=>x.category==='MAHAJAN').reduce((s,x)=>s+x.amount,0))}<br>कुल बिल: <b>${money(g.total)}</b> • जमा: ${money(g.paid)} • बाकी: <b>${money(g.balance)}</b><div class="note">${g.entries.map(x=>x.date+' • '+(x.category==='HOME'?'घर खर्च':x.category==='SHOP'?'दुकान खर्च':'महाजन Payment')+' • '+money(x.amount)+(x.remark?' • '+esc(x.remark):'')).join('<br>')}</div></div>`).join(''):'<p class="note">अभी Credit Card खर्च दर्ज नहीं है।</p>';let sel=$('ccPayStatement');sel.innerHTML=gs.filter(g=>g.balance>0).map(g=>`<option value="${g.key}">${g.label} | बाकी ${money(g.balance)} | Due ${g.due}</option>`).join('')||'<option value="">कोई बकाया Statement नहीं</option>'; $('ccPaymentHistory').innerHTML=creditCardPayments.length?creditCardPayments.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(p=>`<div class="money-record">📅 ${p.date} • कुल ${money(p.amount)} • ${p.allocations?`घर ${money(p.allocations.HOME||0)} | दुकान ${money(p.allocations.SHOP||0)} | महाजन ${money(p.allocations.MAHAJAN||0)}`:(p.category==='HOME'?'घर खर्च':p.category==='SHOP'?'दुकान खर्च':p.category==='MAHAJAN'?'महाजन':'पुराना Payment')} • Statement ${p.statementKey}${p.remark?' • '+esc(p.remark):''}</div>`).join(''):'<p class="note">Payment अभी दर्ज नहीं है।</p>'}
+$('saveCCPayment').onclick=()=>{
+ let key=$('ccPayStatement').value,g=ccStatements().find(x=>x.key===key),
+ date=$('ccPayDate').value||moneyToday(),amount=Number($('ccPayAmount').value);
+ if(!g)return toast('पहले बकाया Statement चुनें');
+ if(!Number.isFinite(amount)||amount<=0||amount>g.balance+0.009)return toast('Payment रकम बकाया रकम से अधिक या गलत है');
+
+ // Calculate each category's unpaid balance from actual spends and previous allocations.
+ let cats=['HOME','SHOP','MAHAJAN'], totals={},paidByCat={HOME:0,SHOP:0,MAHAJAN:0};
+ cats.forEach(c=>totals[c]=g.entries.filter(x=>x.category===c).reduce((s,x)=>s+Number(x.amount||0),0));
+ creditCardPayments.filter(p=>p.statementKey===key).forEach(p=>{
+  if(p.allocations){
+   cats.forEach(c=>paidByCat[c]+=Number(p.allocations[c]||0));
+  }else if(p.category&&paidByCat[p.category]!==undefined){
+   // Backward compatibility for V50/V51 payments.
+   paidByCat[p.category]+=Number(p.amount||0);
+  }
+ });
+ let outstanding={};cats.forEach(c=>outstanding[c]=Math.max(0,totals[c]-paidByCat[c]));
+ let outstandingTotal=cats.reduce((s,c)=>s+outstanding[c],0);
+ if(outstandingTotal<=0)return toast('इस Statement में कोई Category-wise बकाया नहीं है');
+ let toAllocate=Math.min(amount,outstandingTotal),allocations={},remaining=toAllocate;
+ let active=cats.filter(c=>outstanding[c]>0);
+ active.forEach((c,i)=>{
+  let part=i===active.length-1?remaining:Math.min(outstanding[c],Math.round(toAllocate*outstanding[c]/outstandingTotal*100)/100);
+  part=Math.min(part,outstanding[c],remaining);
+  allocations[c]=Number(part.toFixed(2));remaining=Number((remaining-part).toFixed(2));
+ });
+ // Correct any rounding remainder without exceeding a category's unpaid amount.
+ if(remaining>0.001){
+  for(let c of active){let add=Math.min(remaining,outstanding[c]-(allocations[c]||0));allocations[c]=Number(((allocations[c]||0)+add).toFixed(2));remaining=Number((remaining-add).toFixed(2));if(remaining<=0.001)break;}
+ }
+ let payment={id:'CCP'+Date.now(),statementKey:key,date,amount:toAllocate,allocations,remark:$('ccPayRemark').value.trim()};
+ creditCardPayments.unshift(payment);
+ cats.forEach(c=>{
+  let part=Number(allocations[c]||0);
+  if(part>0 && c!=='MAHAJAN'){
+   expenseRecords.unshift({id:'CCPOST'+Date.now()+c,type:c,mode:'CASH',date,
+    category:'Credit Card Bill Payment — '+(c==='HOME'?'घर खर्च':'दुकान खर्च'),
+    amount:part,remark:'Statement '+g.label+' का भुगतान'+(payment.remark?' — '+payment.remark:''),fromCreditCard:true});
+  }
+ });
+ if(!persist())return;
+ $('ccPayAmount').value='';$('ccPayRemark').value='';$('ccPayDate').value=moneyToday();
+ renderMoney();renderCreditCard();
+ toast('Payment वास्तविक खर्च के अनुपात में घर, दुकान और महाजन में Adjust हो गया');
+};
 $('saveExpense').onclick=()=>{
  let type=$('expType').value,mode=$('expMode').value,date=$('expDate').value||moneyToday(),category=$('expCategory').value.trim(),remark=$('expRemark').value.trim();if(mode==='CREDIT'){let amount=Number($('expAmount').value),cccat=$('expCCCategory').value;if(!category)category='Credit Card Expense';if(!Number.isFinite(amount)||amount<=0)return toast('Credit Card खर्च की रकम सही भरें');creditCardEntries.unshift({id:'CC'+Date.now(),date,category:cccat,amount,remark:remark||category});if(!persist())return;['expCategory','expAmount','expRemark'].forEach(id=>$(id).value='');$('expDate').value=moneyToday();$('expMode').value='CASH';$('expMode').dispatchEvent(new Event('change'));renderCreditCard();return toast('Credit Card खर्च Statement में सेव हो गया')}
  if(!category)return toast('खर्च की Category / नाम लिखें');
