@@ -47,6 +47,21 @@ body.show-private-financial .private-financial{display:block!important}
 
 .home-main-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 0 14px}.home-main-btn{min-height:92px;padding:16px 10px;border-radius:16px;font-size:18px;font-weight:900;box-shadow:0 4px 12px #10251a18}.home-main-btn small{display:block;font-size:11px;font-weight:550;margin-top:5px;opacity:.9}.home-secondary-tools{margin:10px 0 12px}.home-secondary-tools .private-toggle{max-width:100%}.bill-history-toggle{width:100%;min-height:50px;text-align:left;padding:13px 15px;font-weight:850;display:flex;justify-content:space-between;align-items:center}.bill-history-content[hidden]{display:none!important}.bill-detail-panel{margin-top:10px;padding:12px;background:#f6f9f6;border:1px solid #dfe8e1;border-radius:12px}.bill-detail-panel h4{margin:8px 0;color:var(--g)}.bill-detail-panel .profit-result{font-size:16px;font-weight:900;color:var(--g)}@media(max-width:380px){.home-main-btn{font-size:16px;min-height:84px;padding:12px 7px}}
 .ledger-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.ledger-action{min-height:76px;padding:13px 10px;border-radius:13px;text-align:left;font-weight:800;border:1px solid #dce5de;box-shadow:0 2px 7px #10251a0a}.ledger-action span{display:block;font-size:16px}.ledger-action small{display:block;font-size:11px;font-weight:500;opacity:.8;margin-top:4px}.ledger-secondary-actions{display:grid;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid #edf0ed}.ledger-secondary-actions .ledger-action{min-height:48px;text-align:center}.ledger-view-card[hidden]{display:none!important}.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.section-head h2{margin:0}.section-head button{padding:9px 12px}.full-btn{width:100%;min-height:48px}.billwise-panel{margin-top:10px;padding:12px;border:1px solid #dce7df;border-radius:12px;background:#f7faf7}.billwise-bill{border:1px solid #e1e9e3;background:#fff;border-radius:10px;padding:10px;margin:8px 0}.billwise-bill button{width:100%;text-align:left}.payment-row{border:1px solid #e5ebe6;border-radius:12px;padding:11px;margin:8px 0;background:#fff}.payment-row strong{color:var(--g)}.payment-row .itemmeta{margin-bottom:0}@media(max-width:380px){.ledger-actions{grid-template-columns:1fr 1fr}.ledger-action span{font-size:14px}}
+
+/* V42 focused workflow layout */
+body.workflow-focus main{display:flex;flex-direction:column;gap:10px}
+body.workflow-focus .panel.active{display:block;order:0;scroll-margin-top:76px}
+body.workflow-focus .stats{order:1;margin:12px 0 0}
+body.workflow-focus .home-secondary-tools{order:2}
+body.workflow-focus .tabs{order:3;margin:0 0 12px}
+body.workflow-focus .home-main-actions{order:4;margin-top:4px}
+body.workflow-focus .home-main-btn{min-height:58px;font-size:15px;padding:10px}
+body.workflow-focus .home-main-btn small{font-size:10px}
+#billModeCard{scroll-margin-top:78px}
+#billCustomerStep{scroll-margin-top:78px}
+#billNagadFields input{scroll-margin-top:90px}
+@media(max-width:380px){body.workflow-focus .stats{gap:6px}body.workflow-focus .stat{padding:9px 5px}}
+
 </style></head><body>
 <header><h1>🧾 NavVastram Inventory</h1><p>स्टॉक, बारकोड, खरीद, बिक्री और हिस्ट्री</p></header>
 <main>
@@ -191,8 +206,8 @@ body.show-private-financial .private-financial{display:block!important}
  <div id="billCustomerStep" style="display:none">
   <div class="card"><div class="itemtop"><h2 id="billModeTitle">ग्राहक विवरण</h2><button class="secondary" id="billChangeMode" type="button">बदलें</button></div>
    <div id="billNagadFields" style="display:none">
-    <div class="field"><label>ग्राहक का नाम (वैकल्पिक)</label><input id="billWalkName" placeholder="ग्राहक का नाम"></div>
-    <div class="grid"><div class="field"><label>मोबाइल नंबर (वैकल्पिक)</label><input id="billWalkPhone" inputmode="tel" placeholder="मोबाइल नंबर"></div><div class="field"><label>पता (वैकल्पिक)</label><input id="billWalkAddress" placeholder="गाँव / पता"></div></div>
+    <div class="field"><label>ग्राहक का नाम (वैकल्पिक)</label><input id="billWalkName" placeholder="ग्राहक का नाम" autocomplete="name" enterkeyhint="next"></div>
+    <div class="grid"><div class="field"><label>मोबाइल नंबर (वैकल्पिक)</label><input id="billWalkPhone" inputmode="tel" autocomplete="tel" enterkeyhint="next" placeholder="मोबाइल नंबर"></div><div class="field"><label>पता (वैकल्पिक)</label><input id="billWalkAddress" autocomplete="street-address" enterkeyhint="next" placeholder="गाँव / पता"></div></div>
    </div>
    <div id="billKhataFields" style="display:none">
     <div class="field"><label>गाँव चुनें</label><div class="scanrow"><select id="billVillage"><option value="">गाँव चुनें</option></select><button class="secondary" id="billVoiceVillage" type="button">🎙️ बोलें</button></div><div id="billVillageSuggestions"></div></div>
@@ -270,7 +285,7 @@ function persist(){try{localStorage.setItem(KEY,JSON.stringify({products,moves,v
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2300)}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function addMove(p,type,qty,price,remark=''){moves.unshift({id:String(Date.now())+Math.random(),productId:p.id,name:p.name,type,qty,price:Number(price||p.purchase),date:new Date().toISOString(),remark});}
-function tab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===t));render();if(t==='purchase'){purchaseSupplierOptions();renderPurchaseLines();renderPurchaseHistory();$('purchasePanelTitle')?.focus?.()}}
+function tab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===t));document.body.classList.toggle('workflow-focus',t==='billing'||t==='ledger');render();if(t==='purchase'){purchaseSupplierOptions();renderPurchaseLines();renderPurchaseHistory();$('purchasePanelTitle')?.focus?.()}if(t==='billing'||t==='ledger'){requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:'smooth'});let target=document.getElementById(t);target?.scrollIntoView({block:'start',behavior:'smooth'})})}}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 $('homeCreateBill').onclick=()=>tab('billing');$('homeCustomerLedger').onclick=()=>tab('ledger');
 
@@ -483,13 +498,16 @@ function billVoice(onText){const SR=window.SpeechRecognition||window.webkitSpeec
 function billFillVillages(){let sel=$('billVillage'),old=sel.value;sel.innerHTML='<option value="">गाँव चुनें</option>'+villages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(villages.includes(old))sel.value=old}
 function billFillCustomers(){let v=$('billVillage').value;let list=customers.filter(c=>!c.deletedAt&&c.village===v);$('billCustomer').innerHTML='<option value="">ग्राहक चुनें</option>'+list.map(c=>`<option value="${c.id}">${esc(c.name)} • पेज ${esc(c.page||'-')}</option>`).join('');$('billKhataCustomerInfo').textContent='इस गाँव में '+list.length+' ग्राहक';}
 function refreshBillCustomer(){billFillVillages();billFillCustomers()}
-function startBillMode(mode){billMode=mode;$('billModeCard').style.display='none';$('billCustomerStep').style.display='block';$('billWorkArea').style.display='none';$('billNagadFields').style.display=mode==='NAGAD'?'block':'none';$('billKhataFields').style.display=mode==='KHATA'?'block':'none';$('billModeTitle').textContent=mode==='NAGAD'?'नगद ग्राहक विवरण':'खाता ग्राहक चुनें';if(mode==='KHATA'){refreshBillCustomer();$('billPayType').value='CREDIT'}else $('billPayType').value='CASH'}
+function startBillMode(mode){billMode=mode;$('billModeCard').style.display='none';$('billCustomerStep').style.display='block';$('billWorkArea').style.display='none';$('billNagadFields').style.display=mode==='NAGAD'?'block':'none';$('billKhataFields').style.display=mode==='KHATA'?'block':'none';$('billModeTitle').textContent=mode==='NAGAD'?'नगद ग्राहक विवरण':'खाता ग्राहक चुनें';if(mode==='KHATA'){refreshBillCustomer();$('billPayType').value='CREDIT'}else{$('billPayType').value='CASH';$('billWalkName').focus();$('billWalkName').scrollIntoView({block:'center',behavior:'smooth'})}}
 $('chooseNagad').onclick=()=>startBillMode('NAGAD');$('chooseKhata').onclick=()=>startBillMode('KHATA');
+function nagadNext(current,next){current.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(next==='CONTINUE'){$('billContinue').click()}else{let field=$(next);field?.focus();field?.scrollIntoView({block:'center',behavior:'smooth'})}}})}
+nagadNext($('billWalkName'),'billWalkPhone');nagadNext($('billWalkPhone'),'billWalkAddress');nagadNext($('billWalkAddress'),'CONTINUE');
+
 $('billChangeMode').onclick=()=>{billMode=null;$('billModeCard').style.display='block';$('billCustomerStep').style.display='none';$('billWorkArea').style.display='none'};
 $('billVillage').onchange=()=>{billFillCustomers();$('billVillageSuggestions').innerHTML='';$('billCustomerSuggestions').innerHTML=''};
 $('billVoiceVillage').onclick=()=>startVoiceMatch(spoken=>showVoiceMatches('billVillageSuggestions',villages,spoken,x=>x,null,v=>{$('billVillage').value=v;billFillCustomers();$('billCustomerSuggestions').innerHTML='';toast('गाँव चुना गया: '+v)}));
 $('billVoiceCustomer').onclick=()=>{let list=customers.filter(c=>!c.deletedAt&&c.village===$('billVillage').value);if(!list.length)return toast('पहले गाँव चुनें');startVoiceMatch(spoken=>showVoiceMatches('billCustomerSuggestions',list,spoken,c=>c.name,c=>`पेज: ${c.page||'-'}`,c=>{$('billCustomer').value=c.id;$('billKhataCustomerInfo').textContent='चुना गया: '+c.name+' | पेज '+(c.page||'-');toast('ग्राहक चुना गया: '+c.name)}))};
-$('billContinue').onclick=()=>{if(billMode==='KHATA'){let c=customers.find(x=>x.id===$('billCustomer').value);if(!c)return toast('पहले गाँव और ग्राहक चुनें');billSelectedCustomer=c}else{billSelectedCustomer=null} $('billCustomerStep').style.display='none';$('billWorkArea').style.display='block';billTotals();$('billBarcode').focus()};
+$('billContinue').onclick=()=>{if(billMode==='KHATA'){let c=customers.find(x=>x.id===$('billCustomer').value);if(!c)return toast('पहले गाँव और ग्राहक चुनें');billSelectedCustomer=c}else{billSelectedCustomer=null} $('billCustomerStep').style.display='none';$('billWorkArea').style.display='block';billTotals();requestAnimationFrame(()=>{$('billWorkArea').scrollIntoView({block:'start',behavior:'smooth'});$('billBarcode').focus({preventScroll:true})})};
 function billCustomerBalance(c){return Number(c?.opening||0)+ledgerEntries.filter(e=>e.customerId===c?.id).reduce((a,e)=>a+(e.kind==='CREDIT'?Number(e.amount): -Number(e.amount)),0)}
 function updateKhataBillSettlement(grand){let box=$('khataBillSettlement');if(!box)return;let active=billMode==='KHATA'&&!!billSelectedCustomer;box.style.display=active?'block':'none';if(!active)return;let prev=billCustomerBalance(billSelectedCustomer),received=Math.max(0,Number($('billAmountReceived').value||0)),total=prev+grand;$('billPreviousBalance').value=money(prev);$('billCurrentBill').value=money(grand);$('billTotalDue').value=money(total);$('billRemainingBalance').value=money(total-received)}
 function billTotals(){
@@ -727,5 +745,5 @@ $('billHistoryMonth')?.addEventListener('change',renderBillHistory);$('showAllBi
 $('toggleBillHistory')?.addEventListener('click',()=>{const box=$('billHistoryContent'),btn=$('toggleBillHistory'),open=box.hidden;box.hidden=!open;btn.setAttribute('aria-expanded',String(open));btn.querySelector('span').textContent=open?'📚 बिल हिस्ट्री बंद करें':'📚 बिल हिस्ट्री खोलें';$('billHistoryChevron').textContent=open?'⌃':'⌄';if(open)renderBillHistory()});
 refreshBillCustomer();renderBillCart();renderBillHistory();
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=41').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=42').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
 </script></body></html>
