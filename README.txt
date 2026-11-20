@@ -20,3 +20,13 @@ V36 Sales Dashboard & Date Range Reports
 - Daily/period Profit-Loss = payments received during the selected period minus full purchase cost of goods sold during that period. Old dues received later do not deduct old purchase cost again.
 - Reports include Daily, Month-to-date, and a custom inclusive From/To date range with a daily breakdown.
 - Existing localStorage key is preserved: navvastram_inventory_v2. Back up data before replacing files.
+
+
+V37 UPDATE - PIN PROTECTED BILL DELETE
+- Bill History now has a Delete Bill button.
+- PIN: 331223 (same protected-delete PIN used in this app).
+- Deleting a bill removes its bill record, its customer CREDIT ledger row, and its specifically tagged initial payment row.
+- Barcode inventory quantities are restored and that bill's SALE movement rows are removed. Manual bill lines do not change stock.
+- Remaining customer payment allocations are recalculated FIFO across surviving bills.
+- Sales/Profit-Loss reports recalculate from the remaining bills and receipts.
+- Deletion is permanent; export a backup first.

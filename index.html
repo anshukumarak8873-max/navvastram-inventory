@@ -596,10 +596,49 @@ async function shareFile(blob,name,title,textValue){const file=new File([blob],n
 async function shareBillPNG(id){const b=bills.find(x=>x.id===id);if(!b)return toast('बिल नहीं मिला');try{const c=invoiceCanvas(b),blob=await new Promise(r=>c.toBlob(r,'image/png'));if(!blob)throw Error('PNG नहीं बना');await shareFile(blob,id+'.png','Thermal Invoice '+id,'Printer app में यह PNG खोलकर 3-inch roll पर print करें।')}catch(e){toast('PNG Share नहीं हो पाया: '+e.message)}}
 async function printBill(id){return shareBillPNG(id)}
 async function shareBillWhatsApp(id){const b=bills.find(x=>x.id===id);if(!b)return toast('बिल नहीं मिला');try{const c=invoiceCanvas(b),jpeg=c.toDataURL('image/jpeg',.92),pdf=buildImagePDF(jpeg,c.width,c.height);await shareFile(pdf,id+'.pdf','Invoice '+id,'NavVastram Invoice PDF')}catch(e){toast('PDF Share नहीं हो पाया: '+e.message)}}
-function renderBillHistory(){if(!$('billHistory'))return;let month=$('billHistoryMonth')?.value||'',filtered=bills.filter(b=>!month||String(b.date||'').slice(0,7)===month);$('billHistory').innerHTML=filtered.map(b=>`<div class="item"><b>${esc(b.id)}</b><div class="itemmeta">${new Date(b.date).toLocaleString('en-IN')}<br>${esc(b.customerName)} | ${esc(b.mode||'')} | ${esc(b.payment)}<br>${esc(b.customerVillage||b.customerAddress||'')}<br>Subtotal: ${money(b.subtotal)} | Discount: ${money(b.discount)}<br><b>Final: ${money(b.grand)}</b><br>प्राप्त: ${money(b.collectedAmount??b.amountReceived??(b.mode==='NAGAD'?b.grand:0))} | बाकी: ${money(Math.max(0,b.grand-Number(b.collectedAmount??b.amountReceived??(b.mode==='NAGAD'?b.grand:0))))}<br><span class="private-financial">Cash-Basis Profit / (Unrecovered Cost): ${money(Number(b.collectedAmount??b.amountReceived??(b.mode==='NAGAD'?b.grand:0))-billCostTotal(b))}</span></div><div class="actions"><button class="secondary" onclick="printBill('${b.id}')">🖨️ PNG प्रिंट</button><button class="secondary" onclick="shareBillWhatsApp('${b.id}')">📄 PDF WhatsApp</button></div><details><summary>Invoice / आइटम देखें</summary>${billInvoiceHTML(b)}</details></div>`).join('')||'<p class="note">इस महीने कोई बिल नहीं है।</p>'}
+function renderBillHistory(){if(!$('billHistory'))return;let month=$('billHistoryMonth')?.value||'',filtered=bills.filter(b=>!month||String(b.date||'').slice(0,7)===month);$('billHistory').innerHTML=filtered.map(b=>`<div class="item"><b>${esc(b.id)}</b><div class="itemmeta">${new Date(b.date).toLocaleString('en-IN')}<br>${esc(b.customerName)} | ${esc(b.mode||'')} | ${esc(b.payment)}<br>${esc(b.customerVillage||b.customerAddress||'')}<br>Subtotal: ${money(b.subtotal)} | Discount: ${money(b.discount)}<br><b>Final: ${money(b.grand)}</b><br>प्राप्त: ${money(b.collectedAmount??b.amountReceived??(b.mode==='NAGAD'?b.grand:0))} | बाकी: ${money(Math.max(0,b.grand-Number(b.collectedAmount??b.amountReceived??(b.mode==='NAGAD'?b.grand:0))))}<br><span class="private-financial">Cash-Basis Profit / (Unrecovered Cost): ${money(Number(b.collectedAmount??b.amountReceived??(b.mode==='NAGAD'?b.grand:0))-billCostTotal(b))}</span></div><div class="actions"><button class="secondary" onclick="printBill('${b.id}')">🖨️ PNG प्रिंट</button><button class="secondary" onclick="shareBillWhatsApp('${b.id}')">📄 PDF WhatsApp</button><button class="danger" onclick="deleteBill('${b.id}')">🗑️ Bill Delete</button></div><details><summary>Invoice / आइटम देखें</summary>${billInvoiceHTML(b)}</details></div>`).join('')||'<p class="note">इस महीने कोई बिल नहीं है।</p>'}
+
+// PIN-protected, linked deletion: restore stock, remove bill-created ledger rows,
+// remove the bill's own initial receipt, then rebuild remaining customer allocations.
+window.deleteBill=function(id){
+ const bill=bills.find(x=>x.id===id);if(!bill)return toast('बिल नहीं मिला');
+ const pin=prompt('Bill Delete करने के लिए 6-digit PIN डालें');if(pin===null)return;
+ if(pin!=='331223')return toast('गलत PIN। बिल सुरक्षित है।');
+ const ok=confirm('स्थायी रूप से Bill '+id+' हटाएँ?\n\nइससे बिल, इससे जुड़ी ग्राहक की खरीद एंट्री, इस बिल की शुरुआती प्राप्ति, स्टॉक बिक्री रिकॉर्ड और Reports में इसकी Billing/Purchase Cost हटेगी। Barcode वाले सामान का स्टॉक वापस जुड़ेगा। यह कार्रवाई वापस नहीं होगी।');
+ if(!ok)return;
+ const snapshot={products:JSON.stringify(products),moves:JSON.stringify(moves),ledgerEntries:JSON.stringify(ledgerEntries),bills:JSON.stringify(bills)};
+ try{
+   // Restore stock for scanned inventory items only; manual lines never changed stock.
+   (bill.items||[]).forEach(line=>{if(!line.productId)return;const product=products.find(p=>p.id===line.productId);if(product)product.qty=Number((Number(product.qty||0)+Number(line.qty||0)).toFixed(3));});
+   // Remove stock movement rows created by this invoice.
+   moves=moves.filter(m=>!(m.type==='SALE'&&String(m.remark||'')==='Bill '+id));
+   // Remove the customer credit created by this bill and its specifically tagged initial receipt.
+   if(bill.customerId){
+     ledgerEntries=ledgerEntries.filter(e=>!(e.customerId===bill.customerId&&((e.kind==='CREDIT'&&String(e.remark||'')==='Bill '+id)||(e.kind==='PAYMENT'&&String(e.remark||'')==='Bill payment received '+id))));
+   }
+   bills=bills.filter(x=>x.id!==id);
+   // Rebuild FIFO allocations from the surviving customer payment ledger so no remaining
+   // bill keeps a collection allocation that depended on the deleted invoice.
+   if(bill.customerId){
+     const remaining=bills.filter(b=>b.customerId===bill.customerId);
+     remaining.forEach(b=>{b.collectedAmount=0;b.collections=[];b.remainingBalance=Number(b.grand||0);b.realizedCashProfit=-billCostTotal(b)});
+     const customer=customers.find(c=>c.id===bill.customerId);
+     if(customer){
+       const receipts=ledgerEntries.filter(e=>e.customerId===bill.customerId&&e.kind==='PAYMENT').sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||(Number(a.created)||0)-(Number(b.created)||0));
+       receipts.forEach(e=>allocateCustomerPayment(customer,Number(e.amount)||0,e.date,e.mode,e.remark));
+     }
+   }
+   if(!persist())throw new Error('save-failed');
+   renderBillHistory();renderSalesDashboard();renderLedger();
+   toast('Bill '+id+' delete हो गया। संबंधित खाता, स्टॉक और Reports अपडेट हो गए।');
+ }catch(err){
+   products=JSON.parse(snapshot.products);moves=JSON.parse(snapshot.moves);ledgerEntries=JSON.parse(snapshot.ledgerEntries);bills=JSON.parse(snapshot.bills);render();renderLedger();renderBillHistory();
+   if(err.message!=='save-failed')toast('Bill delete नहीं हो पाया। डेटा सुरक्षित रखा गया।');
+ }
+};
 window.printBill=printBill;window.shareBillWhatsApp=shareBillWhatsApp;
 $('billHistoryMonth')?.addEventListener('change',renderBillHistory);$('showAllBills')?.addEventListener('click',()=>{$('billHistoryMonth').value='';renderBillHistory()});
 refreshBillCustomer();renderBillCart();renderBillHistory();
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=36').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=37').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
 </script></body></html>
