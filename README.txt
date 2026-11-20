@@ -1,32 +1,25 @@
-NavVastram Inventory V35 - Cash Basis Daily Report
+NavVastram Inventory V38 - Professional Buttons & Customer Ledger UI
 
-Update from V34. Includes the V34 PIN-protected Customer/Dealer delete and all existing app modules.
+Update from V37. Existing data storage key is preserved:
+navvastram_inventory_v2
 
-Daily report rules requested by shop owner:
-1. Today's Total Sales = today's new bill totals + collections received today against older bills (old dues). Initial payments on today's bills are not counted twice.
-2. Today's Profit/Loss = all actual payments received today (including old dues) minus the purchase cost of all items sold on today's bills.
-3. Example: ₹10,000 bill, cost ₹8,000, received ₹5,000 today => today's result -₹3,000. A later ₹2,000 old-dues collection on another day => that later day's result +₹2,000 if no new stock cost was sold that day.
-4. Example: same day ₹5,000 fully paid sale with ₹4,000 cost gives +₹1,000; ₹4,000 sale with ₹3,200 cost and ₹2,000 received gives -₹1,200; daily net = -₹200.
-5. Example: ₹14,000 today's new bills + ₹4,000 received against older bills = ₹18,000 today's Total Sales. The old payment is included in today's receipts/profit, and not counted as a new bill.
+Customer Khata screen redesign:
+- Main customer screen now opens with two primary actions: Bhugtan Prapti and Khata Dekhen.
+- Separate lower actions: Naya Grahak Jode and Grahak ka Vivran Badlein.
+- Bhugtan Prapti lets the user choose a customer, enter amount/date/payment mode/remark, and save the receipt.
+- A separate Payment Receipt List is available from the payment screen, with date-range and customer-name filters.
+- Khata Dekhen shows customer search/list and the selected customer's ledger.
+- Customer details edit form supports Name, Village/Address, Khata Page and Mobile Number updates.
+- Existing customer ledger entries, bill records and customer IDs are preserved when basic details are edited.
+- Existing voice search, manual credit entry, customer delete PIN, bill delete, sales reports and inventory modules remain included.
 
-Customer payments continue to be allocated to oldest outstanding bills (FIFO). Lifetime cash-basis net profit remains total collections applied to bills minus total cost of goods sold.
+UI:
+- Buttons have a cleaner, consistent professional website-style treatment with improved spacing, focus states and active feedback.
+- Customer ledger main actions are arranged for mobile screens.
 
-IMPORTANT: localStorage key remains navvastram_inventory_v2. Back up the app data and all four files before replacing. Do not clear browser site data.
-Files: index.html, manifest.json, sw.js, README.txt
-
-
-V36 Sales Dashboard & Date Range Reports
-- Daily Sales and Monthly Sales count only actual payments received (Cash/UPI/Bank), including customer khata payments and old outstanding collections. Credit-only bill value is not counted as Sales until payment is received.
-- Daily/period Profit-Loss = payments received during the selected period minus full purchase cost of goods sold during that period. Old dues received later do not deduct old purchase cost again.
-- Reports include Daily, Month-to-date, and a custom inclusive From/To date range with a daily breakdown.
-- Existing localStorage key is preserved: navvastram_inventory_v2. Back up data before replacing files.
-
-
-V37 UPDATE - PIN PROTECTED BILL DELETE
-- Bill History now has a Delete Bill button.
-- PIN: 331223 (same protected-delete PIN used in this app).
-- Deleting a bill removes its bill record, its customer CREDIT ledger row, and its specifically tagged initial payment row.
-- Barcode inventory quantities are restored and that bill's SALE movement rows are removed. Manual bill lines do not change stock.
-- Remaining customer payment allocations are recalculated FIFO across surviving bills.
-- Sales/Profit-Loss reports recalculate from the remaining bills and receipts.
-- Deletion is permanent; export a backup first.
+Important:
+1. Export a data backup before replacing files.
+2. Replace all four root files: index.html, manifest.json, sw.js, README.txt.
+3. Do not clear browser site data or localStorage; that may erase inventory and customer records.
+4. This is a local/offline-first app; payment list shows entries recorded in this app's customer ledger.
+5. Verify the new interface on the actual phone after deployment. Browser syntax and archive integrity checks do not equal full device testing.

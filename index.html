@@ -13,7 +13,7 @@ main{max-width:680px;margin:auto;padding:13px}.stats{display:grid;grid-template-
 .panel{display:none}.panel.active{display:block}.card{background:white;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 9px #10251a0b}
 h2{font-size:16px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{margin-bottom:10px}label{display:block;font-size:12px;color:var(--muted);font-weight:650;margin-bottom:5px}
 input,textarea,select{width:100%;border:1px solid #d8e0da;border-radius:11px;padding:11px;font-size:16px;background:white;color:var(--ink)}textarea{min-height:65px}
-button{font:inherit;cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:11px;padding:12px;font-weight:750}.primary{background:var(--g);color:white}.secondary{background:#e8eee9;color:var(--g)}.danger{background:#fae8e7;color:var(--red)}
+button{font:inherit;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,background .12s ease;border-radius:10px}button:active{transform:scale(.985)}button:focus-visible{outline:3px solid #d6ad55;outline-offset:2px}.primary,.secondary,.danger{box-shadow:0 1px 2px #10251a12}.primary{background:linear-gradient(180deg,#214b40,#173b32)}.secondary{border:1px solid #dce5de;background:#fff;color:var(--g)}.danger{border:1px solid #f2d2d0}.tab{border:1px solid #dce5de;box-shadow:0 1px 2px #10251a0a}.tab.active{box-shadow:0 3px 9px #173b3222}.primary,.secondary,.danger{border:0;border-radius:11px;padding:12px;font-weight:750}.primary{background:var(--g);color:white}.secondary{background:#e8eee9;color:var(--g)}.danger{background:#fae8e7;color:var(--red)}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}.scanrow{display:flex;gap:7px}.scanrow input{flex:1;min-width:0}.scanrow button{white-space:nowrap}
 .note{font-size:11px;color:var(--muted);line-height:1.45}.item{border:1px solid #e7ece8;border-radius:12px;padding:11px;margin-top:9px}.itemtop{display:flex;justify-content:space-between;gap:8px}.itemname{font-weight:800}.pill{font-size:11px;background:#edf3ee;color:var(--g);padding:4px 8px;border-radius:20px;white-space:nowrap}.itemmeta{font-size:12px;color:var(--muted);line-height:1.55;margin:6px 0 9px}.item .actions button{font-size:12px;padding:9px}
 #scanner{display:none;position:fixed;inset:0;background:#000e;z-index:20;padding:14px;color:white}#scanner .inner{max-width:600px;margin:7vh auto;background:#14231e;padding:15px;border-radius:17px}#video{width:100%;max-height:60vh;object-fit:cover;background:#222;border-radius:12px}
@@ -45,6 +45,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;p
 body.show-private-financial .private-financial{display:block!important}
 .private-financial input{width:100%}
 
+.ledger-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.ledger-action{min-height:76px;padding:13px 10px;border-radius:13px;text-align:left;font-weight:800;border:1px solid #dce5de;box-shadow:0 2px 7px #10251a0a}.ledger-action span{display:block;font-size:16px}.ledger-action small{display:block;font-size:11px;font-weight:500;opacity:.8;margin-top:4px}.ledger-secondary-actions{display:grid;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid #edf0ed}.ledger-secondary-actions .ledger-action{min-height:48px;text-align:center}.ledger-view-card[hidden]{display:none!important}.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.section-head h2{margin:0}.section-head button{padding:9px 12px}.full-btn{width:100%;min-height:48px}.payment-row{border:1px solid #e5ebe6;border-radius:12px;padding:11px;margin:8px 0;background:#fff}.payment-row strong{color:var(--g)}.payment-row .itemmeta{margin-bottom:0}@media(max-width:380px){.ledger-actions{grid-template-columns:1fr 1fr}.ledger-action span{font-size:14px}}
 </style></head><body>
 <header><h1>🧾 NavVastram Inventory</h1><p>स्टॉक, बारकोड, खरीद, बिक्री और हिस्ट्री</p></header>
 <main>
@@ -112,32 +113,66 @@ body.show-private-financial .private-financial{display:block!important}
 <section class="panel" id="reports"><div class="card"><h2>📊 Inventory Report</h2><div id="report"></div></div><div class="card"><h2>📈 Sales Dashboard / बिक्री रिपोर्ट</h2><div class="private-financial"><p class="note">Sales में केवल वास्तव में प्राप्त Cash / UPI / Bank भुगतान गिना जाएगा। उधार की बाकी रकम भुगतान मिलने की तारीख पर जुड़ेगी।</p><div id="salesDashboard"></div><hr><h3>📅 दो तारीखों के बीच Sales Report</h3><div class="grid"><div class="field"><label>शुरुआती तारीख</label><input id="salesFrom" type="date"></div><div class="field"><label>अंतिम तारीख</label><input id="salesTo" type="date"></div></div><button class="primary" id="runSalesRange" type="button" style="width:100%">रिपोर्ट देखें</button><div id="salesRangeResult" style="margin-top:12px"></div></div></div><div class="card"><h2>🔐 विस्तृत Profit / Loss रिपोर्ट</h2><div class="private-financial"><p class="note">Profit/Loss = चुनी अवधि में प्राप्त भुगतान − उसी अवधि में बेचे गए सामान की पूरी Purchase Cost। पुराने बकाये की वसूली वाले दिन पुरानी लागत दोबारा नहीं कटेगी।</p><div id="profitReport"></div></div></div></section>
 
 <section class="panel" id="ledger">
- <div class="card"><h2>🏘️ गाँव और ग्राहक जोड़ें</h2>
-  <div class="grid"><div class="field"><label>गाँव का नाम</label><input id="villageName" placeholder="गाँव का नाम"></div><div class="field"><label>&nbsp;</label><button class="secondary" id="addVillage" style="width:100%">+ गाँव जोड़ें</button></div></div>
-  <div class="field"><label>ग्राहक का नाम</label><input id="customerName" placeholder="ग्राहक का नाम"></div>
-  <div class="grid"><div class="field"><label>गाँव चुनें</label><select id="customerVillage"><option value="">गाँव चुनें</option></select></div><div class="field"><label>पेज नंबर (बही)</label><input id="customerPage" placeholder="जैसे 12"></div></div>
-  <div class="grid"><div class="field"><label>मोबाइल नंबर (वैकल्पिक)</label><input id="customerPhone" inputmode="numeric" placeholder="मोबाइल नंबर"></div><div class="field"><label>पुराना बाकी / Opening Balance (₹)</label><input id="customerOpening" type="number" min="0" step=".01" placeholder="न हो तो 0"></div></div>
-  <button class="primary" id="addCustomer" style="width:100%">ग्राहक सेव करें</button>
-  <div id="customerSaveMsg" class="note"></div>
+ <div class="card ledger-home" id="ledgerHome">
+  <h2>👥 ग्राहक खाता</h2>
+  <p class="note">ग्राहक का भुगतान दर्ज करें, खाता देखें या ग्राहक की जानकारी अपडेट करें।</p>
+  <div class="ledger-actions">
+   <button class="ledger-action primary" id="goPayment">💵 <span>भुगतान प्राप्ति</span><small>ग्राहक से पैसा प्राप्त करें</small></button>
+   <button class="ledger-action secondary" id="goKhata">📒 <span>खाता देखें</span><small>ग्राहक का पूरा लेन-देन</small></button>
+  </div>
+  <div class="ledger-secondary-actions">
+   <button class="ledger-action secondary" id="goNewCustomer">＋ नया ग्राहक जोड़ें</button>
+   <button class="ledger-action secondary" id="goEditCustomer">✎ ग्राहक का विवरण बदलें</button>
+  </div>
  </div>
- <div class="card"><h2>🔎 ग्राहक खाता खोजें</h2>
+ <div class="card ledger-view-card" id="customerCreateCard" hidden>
+  <div class="section-head"><h2>＋ नया ग्राहक जोड़ें</h2><button class="secondary backLedger">← वापस</button></div>
+  <div class="grid"><div class="field"><label>गाँव का नाम जोड़ें</label><input id="villageName" placeholder="गाँव का नाम"></div><div class="field"><label>&nbsp;</label><button class="secondary" id="addVillage" style="width:100%">+ गाँव जोड़ें</button></div></div>
+  <div class="field"><label>ग्राहक का नाम *</label><input id="customerName" placeholder="ग्राहक का नाम"></div>
+  <div class="grid"><div class="field"><label>गाँव चुनें *</label><select id="customerVillage"><option value="">गाँव चुनें</option></select></div><div class="field"><label>पेज नंबर (बही)</label><input id="customerPage" placeholder="जैसे 12"></div></div>
+  <div class="grid"><div class="field"><label>मोबाइल नंबर</label><input id="customerPhone" inputmode="numeric" placeholder="मोबाइल नंबर"></div><div class="field"><label>पुराना बाकी (₹)</label><input id="customerOpening" type="number" min="0" step=".01" placeholder="न हो तो 0"></div></div>
+  <button class="primary full-btn" id="addCustomer">ग्राहक सेव करें</button><div id="customerSaveMsg" class="note"></div>
+ </div>
+ <div class="card ledger-view-card" id="customerSearchCard" hidden>
+  <div class="section-head"><h2>📒 ग्राहक का खाता देखें</h2><button class="secondary backLedger">← वापस</button></div>
   <div class="field"><label>गाँव चुनें / बोलकर खोजें</label><div class="scanrow"><select id="ledgerVillage"><option value="">सभी गाँव</option></select><button class="secondary" id="voiceVillage" type="button">🎙️ बोलें</button></div><div id="ledgerVillageSuggestions"></div></div>
   <div class="field"><label>ग्राहक का नाम खोजें</label><div class="scanrow"><input id="ledgerSearch" placeholder="नाम लिखें या बोलें"><button class="secondary" id="voiceSearch" type="button">🎙️ बोलें</button></div><div id="customerSuggestions"></div></div>
-  <div class="actions" style="margin:8px 0"><button class="secondary" id="printLedger" type="button">🖨️ खाता प्रिंट / PDF</button></div><div id="customerLedgerView" class="note">ग्राहक चुनने पर उसका खाता यहाँ दिखेगा।</div>
+  <div id="customerList"></div><div id="ledgerSummary" class="item"></div>
+  <div class="actions" style="margin:8px 0"><button class="secondary" id="printLedger" type="button">🖨️ खाता प्रिंट / PDF</button></div>
+  <div id="customerLedgerView" class="note">ग्राहक चुनने पर उसका खाता यहाँ दिखेगा।</div>
  </div>
- <div class="card"><h2>🧾 ग्राहक की खरीद / उधार जोड़ें</h2>
-  <div class="field"><label>चुना हुआ ग्राहक</label><input id="txnCustomerLabel" readonly placeholder="पहले ग्राहक चुनें"></div>
-  <div class="grid"><div class="field"><label>खरीद / उधार राशि (₹)</label><input id="txnPurchase" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>आज की तारीख</label><input id="txnDate" type="date"></div></div>
-  <div class="field"><label>विवरण</label><input id="txnRemark" placeholder="जैसे कपड़े की खरीद"></div>
-  <button class="primary" id="addCredit" style="width:100%">+ खरीद खाते में जोड़ें</button>
- </div>
- <div class="card"><h2>💵 ग्राहक से भुगतान प्राप्त करें</h2>
+ <div class="card ledger-view-card" id="paymentEntryCard" hidden>
+  <div class="section-head"><h2>💵 भुगतान प्राप्ति दर्ज करें</h2><button class="secondary backLedger">← वापस</button></div>
+  <div class="field"><label>गाँव / ग्राहक खोजें</label><div class="scanrow"><select id="paymentCustomerVillage"><option value="">सभी गाँव</option></select><input id="paymentCustomerSearch" placeholder="ग्राहक का नाम"></div><div id="paymentCustomerChoices"></div></div>
+  <div class="field"><label>चुना हुआ ग्राहक</label><input id="txnCustomerLabel" readonly placeholder="ग्राहक चुनें"></div>
   <div class="grid"><div class="field"><label>भुगतान राशि (₹)</label><input id="txnPayment" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>भुगतान की तारीख</label><input id="paymentDate" type="date"></div></div>
   <div class="field"><label>भुगतान का माध्यम</label><select id="paymentMode"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>QR</option><option>Other</option></select></div>
-  <div class="field"><label>Remark</label><input id="paymentRemark" placeholder="वैकल्पिक"></div>
-  <button class="primary" id="addPayment" style="width:100%">✓ भुगतान दर्ज करें</button>
+  <div class="field"><label>विवरण / Remark</label><input id="paymentRemark" placeholder="वैकल्पिक"></div>
+  <button class="primary full-btn" id="addPayment">✓ भुगतान दर्ज करें</button>
+  <button class="secondary full-btn" id="showPaymentList" style="margin-top:9px">📋 भुगतान प्राप्ति की पूरी सूची देखें</button>
  </div>
- <div class="card"><h2>📋 ग्राहक सूची</h2><div class="note">कुल ग्राहक और कुल बाकी नीचे दिखेगा।</div><div id="ledgerSummary" class="item"></div><div id="customerList"></div></div>
+ <div class="card ledger-view-card" id="paymentListCard" hidden>
+  <div class="section-head"><h2>📋 भुगतान प्राप्ति सूची</h2><button class="secondary backLedger">← वापस</button></div>
+  <div class="grid"><div class="field"><label>शुरुआती तारीख</label><input type="date" id="paymentListFrom"></div><div class="field"><label>अंतिम तारीख</label><input type="date" id="paymentListTo"></div></div>
+  <div class="field"><label>ग्राहक का नाम खोजें</label><input id="paymentListSearch" placeholder="नाम लिखें"></div>
+  <div id="paymentListSummary" class="item"></div><div id="customerPaymentList"></div>
+ </div>
+ <div class="card ledger-view-card" id="customerEditCard" hidden>
+  <div class="section-head"><h2>✎ ग्राहक का विवरण बदलें</h2><button class="secondary backLedger">← वापस</button></div>
+  <div class="field"><label>ग्राहक खोजें</label><input id="editCustomerSearch" placeholder="नाम लिखें"><div id="editCustomerChoices"></div></div>
+  <input id="editCustomerId" type="hidden">
+  <div class="field"><label>नाम *</label><input id="editCustomerName" placeholder="ग्राहक का नाम"></div>
+  <div class="grid"><div class="field"><label>गाँव / पता *</label><select id="editCustomerVillage"><option value="">गाँव चुनें</option></select></div><div class="field"><label>बही पेज नंबर</label><input id="editCustomerPage" placeholder="पेज नंबर"></div></div>
+  <div class="field"><label>मोबाइल नंबर</label><input id="editCustomerPhone" inputmode="numeric" placeholder="मोबाइल नंबर"></div>
+  <button class="primary full-btn" id="saveCustomerDetails">बदला हुआ विवरण सेव करें</button>
+ </div>
+ <div class="card ledger-view-card" id="customerTxnCard" hidden>
+  <div class="section-head"><h2>🧾 मैन्युअल खरीद / उधार जोड़ें</h2><button class="secondary backLedger">← वापस</button></div>
+  <div class="field"><label>चुना हुआ ग्राहक</label><input id="txnCustomerLabelCredit" readonly placeholder="पहले ग्राहक चुनें"></div>
+  <div class="grid"><div class="field"><label>खरीद / उधार राशि (₹)</label><input id="txnPurchase" type="number" min="0" step=".01" placeholder="राशि"></div><div class="field"><label>तारीख</label><input id="txnDate" type="date"></div></div>
+  <div class="field"><label>विवरण</label><input id="txnRemark" placeholder="जैसे कपड़े की खरीद"></div>
+  <button class="primary full-btn" id="addCredit">+ खरीद खाते में जोड़ें</button>
+ </div>
 </section>
 
 <section class="panel" id="billing">
@@ -311,10 +346,12 @@ function renderLedger(){
  $('customerSuggestions').innerHTML=matches.slice(0,12).map(c=>`<button class="secondary" style="width:100%;text-align:left;margin:3px 0" onclick="selectCustomer('${c.id}')">${esc(c.name)} • ${esc(c.village)} • पेज ${esc(c.page||'-')}</button>`).join('');
  const getBalance=c=>Number(c.opening||0)+ledgerEntries.filter(e=>e.customerId===c.id).reduce((a,e)=>a+(e.kind==='CREDIT'?Number(e.amount): -Number(e.amount)),0);
  $('ledgerSummary').innerHTML=`कुल सक्रिय ग्राहक: <b>${activeCustomers.length}</b><br>कुल बकाया: <b>${money(customers.reduce((a,c)=>a+Math.max(0,getBalance(c)),0))}</b>`;
- $('customerList').innerHTML=activeCustomers.length?activeCustomers.map(c=>`<div class="item"><b>${esc(c.name)}</b><div class="itemmeta">गाँव: ${esc(c.village)} | पेज: ${esc(c.page||'-')} | मोबाइल: ${esc(c.phone||'-')}<br>बाकी: <b>${money(getBalance(c))}</b></div><div class="actions"><button class="secondary" onclick="selectCustomer('${c.id}')">खाता देखें</button><button class="secondary" onclick="editCustomer('${c.id}')">विवरण बदलें</button><button class="danger" onclick="deleteCustomer('${c.id}')">🔒 Delete</button></div></div>`).join(''):'<p class="note">अभी ग्राहक नहीं जोड़े गए।</p>';
+ $('customerList').innerHTML=activeCustomers.length?activeCustomers.map(c=>`<div class="item"><b>${esc(c.name)}</b><div class="itemmeta">गाँव: ${esc(c.village)} | पेज: ${esc(c.page||'-')} | मोबाइल: ${esc(c.phone||'-')}<br>बाकी: <b>${money(getBalance(c))}</b></div><div class="actions"><button class="secondary" onclick="selectCustomer('${c.id}')">खाता खोलें</button><button class="danger" onclick="deleteCustomer('${c.id}')">🔒 Delete</button></div></div>`).join(''):'<p class="note">अभी ग्राहक नहीं जोड़े गए।</p>';
+ renderCustomerPayments();
  if(selectedCustomerId){let c=customers.find(x=>x.id===selectedCustomerId);if(c)showCustomerLedger(c)}
 }
-window.selectCustomer=id=>{selectedCustomerId=id;let c=customers.find(x=>x.id===id);if(!c){toast('ग्राहक नहीं मिला');return}tab('ledger');$('txnCustomerLabel').value=`${c.name} • ${c.village} • पेज ${c.page||'-'}`;showCustomerLedger(c);setTimeout(()=> $('customerLedgerView').scrollIntoView({behavior:'smooth',block:'center'}),120)};
+window.selectCustomer=id=>{selectedCustomerId=id;let c=customers.find(x=>x.id===id);if(!c){toast('ग्राहक नहीं मिला');return}tab('ledger');$('txnCustomerLabelCredit').value=`${c.name} • ${c.village} • पेज ${c.page||'-'}`;showCustomerLedger(c);$('customerLedgerView').insertAdjacentHTML('afterbegin',`<button class="secondary full-btn" onclick="openCustomerTxn()">＋ मैन्युअल खरीद / उधार जोड़ें</button><button class="secondary full-btn" style="margin-top:7px" onclick="editCustomer('${c.id}')">✎ ग्राहक का विवरण बदलें</button>`);setTimeout(()=> $('customerLedgerView').scrollIntoView({behavior:'smooth',block:'center'}),120)};
+window.openCustomerTxn=()=>{if(!selectedCustomerId)return toast('पहले ग्राहक चुनें');openLedgerView('customerTxnCard');let c=customers.find(x=>x.id===selectedCustomerId);$('txnCustomerLabelCredit').value=c?`${c.name} • ${c.village}`:''};
 function showCustomerLedger(c){
  if(!c)return;
  const rows=ledgerEntries.filter(e=>e.customerId===c.id).sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created);
@@ -325,11 +362,29 @@ function showCustomerLedger(c){
  $('customerLedgerView').innerHTML=`<div class="item"><b>${esc(c.name)}</b><div class="itemmeta">गाँव: ${esc(c.village)} | बही पेज: <b>${esc(c.page||'-')}</b></div><p>Opening Balance: <b>${money(opening)}</b></p><p>आज की खरीद: <b>${money(rows.filter(e=>e.date===todayISO()&&e.kind==='CREDIT').reduce((a,e)=>a+e.amount,0))}</b></p><p>आज का भुगतान: <b>${money(rows.filter(e=>e.date===todayISO()&&e.kind==='PAYMENT').reduce((a,e)=>a+e.amount,0))}</b></p><h2>वर्तमान बाकी: ${money(balance)}</h2></div><table><tr><th>तारीख / विवरण</th><th>प्रकार</th><th>खरीद</th><th>भुगतान</th><th>बाकी</th></tr>${body||'<tr><td colspan="5">अभी कोई लेन-देन नहीं</td></tr>'}</table>`;
 }
 $('addVillage').onclick=()=>{let v=$('villageName').value.trim();if(!v)return toast('गाँव का नाम लिखें');if(villages.some(x=>x.toLowerCase()===v.toLowerCase()))return toast('यह गाँव पहले से मौजूद है');villages.push(v);$('villageName').value='';persist();toast('गाँव जुड़ गया')};
-$('addCustomer').onclick=()=>{let name=$('customerName').value.trim(),village=$('customerVillage').value,page=$('customerPage').value.trim(),phone=$('customerPhone').value.trim();if(!name||!village)return toast('ग्राहक का नाम और गाँव चुनें');if(customers.some(c=>!c.deletedAt&&c.name.toLowerCase()===name.toLowerCase()&&c.village===village))return toast('यह ग्राहक पहले से मौजूद है');let opening=+$('customerOpening').value||0;if(!Number.isFinite(opening)||opening<0)return toast('Opening Balance सही भरें');let c={id:'C'+Date.now(),name,village,page,phone,opening};customers.push(c);$('customerName').value='';$('customerPage').value='';$('customerPhone').value='';$('customerOpening').value='';persist();selectCustomer(c.id);toast('ग्राहक सेव हो गया')};
+$('addCustomer').onclick=()=>{let name=$('customerName').value.trim(),village=$('customerVillage').value,page=$('customerPage').value.trim(),phone=$('customerPhone').value.trim();if(!name||!village)return toast('ग्राहक का नाम और गाँव चुनें');if(customers.some(c=>!c.deletedAt&&c.name.toLowerCase()===name.toLowerCase()&&c.village===village))return toast('यह ग्राहक पहले से मौजूद है');let opening=+$('customerOpening').value||0;if(!Number.isFinite(opening)||opening<0)return toast('Opening Balance सही भरें');let c={id:'C'+Date.now(),name,village,page,phone,opening};customers.push(c);$('customerName').value='';$('customerPage').value='';$('customerPhone').value='';$('customerOpening').value='';persist();openLedgerView('customerSearchCard');$('ledgerSearch').value=c.name;renderLedger();selectCustomer(c.id);toast('ग्राहक सेव हो गया')};
 $('ledgerSearch').oninput=renderLedger;$('ledgerVillage').onchange=renderLedger;
 $('addCredit').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),amount=+$('txnPurchase').value;if(!c||!Number.isFinite(amount)||amount<=0)return toast('ग्राहक चुनें और सही खरीद राशि भरें');ledgerEntries.push({id:'L'+Date.now(),customerId:c.id,kind:'CREDIT',amount,date:$('txnDate').value||todayISO(),remark:$('txnRemark').value.trim(),created:Date.now()});$('txnPurchase').value='';$('txnRemark').value='';persist();showCustomerLedger(c);toast('खरीद खाते में जुड़ गई')};
-$('addPayment').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),amount=+$('txnPayment').value;if(!c||!Number.isFinite(amount)||amount<=0)return toast('ग्राहक चुनें और सही भुगतान राशि भरें');let date=$('paymentDate').value||todayISO(),mode=$('paymentMode').value,remark=$('paymentRemark').value.trim();ledgerEntries.push({id:'L'+Date.now(),customerId:c.id,kind:'PAYMENT',amount,date,mode,remark,created:Date.now()});let unapplied=allocateCustomerPayment(c,amount,date,mode,remark);$('txnPayment').value='';$('paymentRemark').value='';persist();showCustomerLedger(c);toast(unapplied>0?'भुगतान दर्ज हुआ; '+money(unapplied)+' पुराने/बिना बिल वाले खाते में समायोजित नहीं हुआ':'भुगतान दर्ज हुआ और पुराने बिलों में FIFO से समायोजित हुआ')};
-window.editCustomer=id=>{let c=customers.find(x=>x.id===id);if(!c)return;let name=prompt('ग्राहक का नाम',c.name);if(name===null)return;name=name.trim();if(!name)return toast('नाम खाली नहीं हो सकता');let page=prompt('बही पेज नंबर',c.page||'');if(page===null)return;let phone=prompt('मोबाइल नंबर',c.phone||'');if(phone===null)return;c.name=name;c.page=page.trim();c.phone=phone.trim();persist();toast('ग्राहक विवरण अपडेट हुआ')};
+$('addPayment').onclick=()=>{let c=customers.find(x=>x.id===selectedCustomerId),amount=+$('txnPayment').value;if(!c||!Number.isFinite(amount)||amount<=0)return toast('ग्राहक चुनें और सही भुगतान राशि भरें');let date=$('paymentDate').value||todayISO(),mode=$('paymentMode').value,remark=$('paymentRemark').value.trim();ledgerEntries.push({id:'L'+Date.now(),customerId:c.id,kind:'PAYMENT',amount,date,mode,remark,created:Date.now()});let unapplied=allocateCustomerPayment(c,amount,date,mode,remark);$('txnPayment').value='';$('paymentRemark').value='';persist();showCustomerLedger(c);renderCustomerPayments();$('txnCustomerLabel').value=`${c.name} • ${c.village} • बाकी ${money(customerBalanceValue(c))}`;toast(unapplied>0?'भुगतान दर्ज हुआ; '+money(unapplied)+' पुराने/बिना बिल वाले खाते में समायोजित नहीं हुआ':'भुगतान दर्ज हुआ और पुराने बिलों में FIFO से समायोजित हुआ')};
+window.editCustomer=id=>{let c=customers.find(x=>x.id===id&&!x.deletedAt);if(!c)return;openLedgerView('customerEditCard');$('editCustomerId').value=c.id;$('editCustomerName').value=c.name||'';$('editCustomerPage').value=c.page||'';$('editCustomerPhone').value=c.phone||'';$('editCustomerVillage').value=c.village||''};
+function openLedgerView(id){['customerCreateCard','customerSearchCard','paymentEntryCard','paymentListCard','customerEditCard','customerTxnCard'].forEach(x=>$(x).hidden=x!==id);$('ledgerHome').hidden=true;if(id==='paymentListCard')renderCustomerPayments();if(id==='customerEditCard')fillEditVillageOptions()}
+function showLedgerHome(){['customerCreateCard','customerSearchCard','paymentEntryCard','paymentListCard','customerEditCard','customerTxnCard'].forEach(x=>$(x).hidden=true);$('ledgerHome').hidden=false}
+function fillEditVillageOptions(){let el=$('editCustomerVillage'),old=el.value;el.innerHTML='<option value="">गाँव चुनें</option>'+villages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(old)el.value=old}
+function renderPaymentCustomerChoices(){let v=$('paymentCustomerVillage').value,q=$('paymentCustomerSearch').value.trim().toLowerCase();let list=customers.filter(c=>!c.deletedAt&&(!v||c.village===v)&&(!q||c.name.toLowerCase().includes(q)));$('paymentCustomerChoices').innerHTML=list.slice(0,15).map(c=>`<button type="button" class="voice-match-btn" onclick="choosePaymentCustomer('${c.id}')">${esc(c.name)} <small>${esc(c.village)} • बाकी ${money(customerBalanceValue(c))}</small></button>`).join('')||'<p class="note">कोई ग्राहक नहीं मिला।</p>'}
+function customerBalanceValue(c){return Number(c.opening||0)+ledgerEntries.filter(e=>e.customerId===c.id).reduce((a,e)=>a+(e.kind==='CREDIT'?Number(e.amount):-Number(e.amount)),0)}
+window.choosePaymentCustomer=id=>{let c=customers.find(x=>x.id===id&&!x.deletedAt);if(!c)return;selectedCustomerId=id;$('txnCustomerLabel').value=`${c.name} • ${c.village} • बाकी ${money(customerBalanceValue(c))}`;$('paymentCustomerChoices').innerHTML=`<div class="item"><b>${esc(c.name)}</b><div class="itemmeta">${esc(c.village)} • वर्तमान बाकी: ${money(customerBalanceValue(c))}</div></div>`};
+function renderCustomerPayments(){if(!$('customerPaymentList'))return;let from=$('paymentListFrom').value,to=$('paymentListTo').value,q=($('paymentListSearch').value||'').trim().toLowerCase();let rows=ledgerEntries.filter(e=>e.kind==='PAYMENT').map(e=>({e,c:customers.find(c=>c.id===e.customerId)})).filter(x=>x.c&&(!from||x.e.date>=from)&&(!to||x.e.date<=to)&&(!q||x.c.name.toLowerCase().includes(q))).sort((a,b)=>(b.e.date||'').localeCompare(a.e.date||'')||(b.e.created||0)-(a.e.created||0));let total=rows.reduce((a,x)=>a+Number(x.e.amount||0),0);$('paymentListSummary').innerHTML=`कुल भुगतान: <b>${rows.length}</b> &nbsp; | &nbsp; कुल प्राप्त राशि: <b>${money(total)}</b>`;$('customerPaymentList').innerHTML=rows.map(({e,c})=>`<div class="payment-row"><div class="itemtop"><strong>${esc(c.name)}</strong><b>${money(e.amount)}</b></div><div class="itemmeta">${esc(c.village)} • ${new Date((e.date||todayISO())+'T00:00:00').toLocaleDateString('en-IN')}<br>माध्यम: ${esc(e.mode||'-')} • ${esc(e.remark||'भुगतान प्राप्ति')}</div></div>`).join('')||'<p class="note">इस अवधि में कोई भुगतान प्राप्ति दर्ज नहीं है।</p>'}
+$('goPayment').onclick=()=>{openLedgerView('paymentEntryCard');$('paymentCustomerVillage').innerHTML='<option value="">सभी गाँव</option>'+villages.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');$('paymentCustomerSearch').value='';$('paymentCustomerChoices').innerHTML='';$('txnPayment').value='';renderPaymentCustomerChoices()};
+$('goKhata').onclick=()=>{openLedgerView('customerSearchCard');$('ledgerSearch').value='';renderLedger()};
+$('goNewCustomer').onclick=()=>{openLedgerView('customerCreateCard');fillVillageOptions()};
+$('goEditCustomer').onclick=()=>{openLedgerView('customerEditCard');$('editCustomerId').value='';$('editCustomerName').value='';$('editCustomerPage').value='';$('editCustomerPhone').value='';$('editCustomerSearch').value='';$('editCustomerChoices').innerHTML='';fillEditVillageOptions()};
+document.querySelectorAll('.backLedger').forEach(b=>b.onclick=showLedgerHome);
+$('showPaymentList').onclick=()=>{openLedgerView('paymentListCard');$('paymentListFrom').value='';$('paymentListTo').value='';$('paymentListSearch').value='';renderCustomerPayments()};
+['paymentListFrom','paymentListTo','paymentListSearch'].forEach(id=>$(id).addEventListener('input',renderCustomerPayments));
+$('paymentCustomerVillage').onchange=renderPaymentCustomerChoices;$('paymentCustomerSearch').oninput=renderPaymentCustomerChoices;
+$('editCustomerSearch').oninput=()=>{let q=$('editCustomerSearch').value.trim().toLowerCase();let list=customers.filter(c=>!c.deletedAt&&(!q||c.name.toLowerCase().includes(q)));$('editCustomerChoices').innerHTML=list.slice(0,12).map(c=>`<button type="button" class="voice-match-btn" onclick="editCustomer('${c.id}')">${esc(c.name)} <small>${esc(c.village)} • ${esc(c.phone||'-')}</small></button>`).join('')};
+$('saveCustomerDetails').onclick=()=>{let c=customers.find(x=>x.id===$('editCustomerId').value&&!x.deletedAt);if(!c)return toast('पहले ग्राहक चुनें');let name=$('editCustomerName').value.trim(),village=$('editCustomerVillage').value;if(!name||!village)return toast('नाम और गाँव भरें');let duplicate=customers.some(x=>x.id!==c.id&&!x.deletedAt&&x.name.toLowerCase()===name.toLowerCase()&&x.village===village);if(duplicate)return toast('इस गाँव में यही नाम पहले से है');c.name=name;c.village=village;c.page=$('editCustomerPage').value.trim();c.phone=$('editCustomerPhone').value.trim();persist();renderLedger();toast('ग्राहक का विवरण अपडेट हो गया');showLedgerHome()};
+
 window.deleteCustomer=id=>{let c=customers.find(x=>x.id===id);if(!c||c.deletedAt)return toast('ग्राहक नहीं मिला');let pin=prompt('ग्राहक विवरण हटाने के लिए 6-digit PIN डालें');if(pin===null)return;if(pin!=='331223')return toast('गलत PIN। ग्राहक सुरक्षित है।');if(!confirm('क्या '+c.name+' का विवरण सक्रिय सूची से हटाना है? पुराने Bills और Ledger History सुरक्षित रहेंगे।'))return;c.deletedAt=new Date().toISOString();if(selectedCustomerId===id){selectedCustomerId=null;$('customerLedgerView').innerHTML='';$('txnCustomerLabel').value=''}persist();renderLedger();toast('ग्राहक विवरण हटाया गया। पुराना हिसाब सुरक्षित है।')};
 $('printLedger').onclick=()=>{if(!selectedCustomerId)return toast('पहले ग्राहक चुनें');window.print()};
 $('voiceVillage').onclick=()=>startVoiceMatch(spoken=>showVoiceMatches('ledgerVillageSuggestions',villages,spoken,x=>x,null,v=>{$('ledgerVillage').value=v;renderLedger();toast('गाँव चुना गया: '+v)}));
@@ -640,5 +695,5 @@ window.printBill=printBill;window.shareBillWhatsApp=shareBillWhatsApp;
 $('billHistoryMonth')?.addEventListener('change',renderBillHistory);$('showAllBills')?.addEventListener('click',()=>{$('billHistoryMonth').value='';renderBillHistory()});
 refreshBillCustomer();renderBillCart();renderBillHistory();
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=37').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js?v=38').catch(()=>{});render();renderLedger();renderDealers();renderPurchaseHistory();
 </script></body></html>
