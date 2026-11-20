@@ -1,26 +1,28 @@
-NavVastram Inventory V32 - Cash Realized Profit Update
+NavVastram Inventory V34 - PIN Protected Customer / Dealer Delete
 
 Files: index.html, manifest.json, sw.js, README.txt
 
-New accounting behavior:
-- Inventory stock is reduced when a bill is completed, whether cash or credit.
-- Cash/Nagad bills count the full bill total as received.
-- Khata bills count only the amount actually received at billing time.
-- Later customer payments are allocated to that customer's oldest outstanding bills first (FIFO).
-- Each invoice's cash-basis result = amount collected against that invoice minus its recorded purchase cost.
-- Amount collected below cost appears as unrecovered cost / negative cash-basis result; only receipts above cost become realized profit.
-- The report shows total sales, total received, today's received amount, today's cash-basis profit/cost recovery, total outstanding, total cost, and estimated gross profit if all invoices are fully paid.
-- Manual billing purchase cost rules are unchanged: Normal = MRP x 0.50 x 0.91; NET = MRP x 0.80. Barcode items use saved purchase price.
+V34 changes:
+- Added a Delete option to each Customer record in Customer Ledger.
+- Added a Delete option to each Dealer record in Dealer Ledger.
+- Before either delete action, the app asks for the 6-digit PIN: 331223.
+- Incorrect PIN or Cancel leaves the record unchanged.
+- A second confirmation is shown before deletion.
+- Deletion is a soft-delete/archive: the Customer or Dealer is removed from active lists and new billing/supplier selection, but existing bills, ledger entries, purchase history, and balances remain saved for historical records.
+- Deleted records are retained in local backup data with a deletedAt marker.
 
-Important:
-- Existing localStorage key remains navvastram_inventory_v2.
-- Back up before replacing files. Do not clear browser site data.
-- Customer payment allocation to bills uses oldest-first FIFO. Payments not matched to invoice balances remain as unapplied account balance.
-- This is a cash-realization management view, not statutory accounting or tax advice.
+Existing features preserved:
+- localStorage key remains navvastram_inventory_v2.
+- V33 invoice fixes remain: no dashed line between item rows, duplicate category names normalized on invoice, amounts displayed in whole rupees.
+- Cash-realized profit logic and purchase register retained.
 
+Update steps:
+1. Download and extract this ZIP.
+2. Back up your current four files and your app data before updating.
+3. Replace index.html, manifest.json, sw.js, README.txt in the GitHub repository root.
+4. Wait for GitHub Pages to publish, then reopen the app.
 
-V33 Invoice display fixes:
-- Removed dashed separators between individual invoice items on the 80mm thermal/PNG invoice.
-- Manual category item names are saved once; existing duplicate names such as “साड़ी - साड़ी” are normalized for customer invoices.
-- Item amounts and invoice totals are displayed in rounded whole rupees without decimals.
-- Existing localStorage key and cash-realized profit logic are preserved.
+IMPORTANT:
+- Do not clear browser Site Data / App Data; local inventory data is stored locally.
+- PIN protection is an in-app safeguard, not strong security against someone who can inspect or modify the app source.
+- Test with one sample customer/dealer first. Verify that old bills and ledger history remain visible.
