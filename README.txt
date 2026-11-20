@@ -23,3 +23,11 @@ Important:
 3. Do not clear browser site data or localStorage; that may erase inventory and customer records.
 4. This is a local/offline-first app; payment list shows entries recorded in this app's customer ledger.
 5. Verify the new interface on the actual phone after deployment. Browser syntax and archive integrity checks do not equal full device testing.
+
+
+V39 Modification:
+- Payment Receipt screen now has voice search for Village and Customer Name, matching the Khata Dekhen voice matching workflow.
+- Voice village recognition ranks similar village names; choosing one filters the customer list.
+- Voice customer recognition ranks similar customer names within the selected village and shows village/balance details.
+- Clicking “भुगतान दर्ज करें” now asks for confirmation with customer, village, amount, date and payment mode. The ledger entry is saved only after OK. Cancel leaves data unchanged.
+- Existing localStorage key navvastram_inventory_v2 is preserved.
