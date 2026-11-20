@@ -1,33 +1,13 @@
-NavVastram Inventory V38 - Professional Buttons & Customer Ledger UI
+NavVastram Inventory V41 – Actual Profit, Payment Discount & Bill-wise Payments
 
-Update from V37. Existing data storage key is preserved:
-navvastram_inventory_v2
+Update: Backup V40 first. Replace index.html, manifest.json, sw.js and README.txt in the GitHub repository root. Refresh the app. Do NOT clear site data/localStorage. Data key remains navvastram_inventory_v2.
 
-Customer Khata screen redesign:
-- Main customer screen now opens with two primary actions: Bhugtan Prapti and Khata Dekhen.
-- Separate lower actions: Naya Grahak Jode and Grahak ka Vivran Badlein.
-- Bhugtan Prapti lets the user choose a customer, enter amount/date/payment mode/remark, and save the receipt.
-- A separate Payment Receipt List is available from the payment screen, with date-range and customer-name filters.
-- Khata Dekhen shows customer search/list and the selected customer's ledger.
-- Customer details edit form supports Name, Village/Address, Khata Page and Mobile Number updates.
-- Existing customer ledger entries, bill records and customer IDs are preserved when basic details are edited.
-- Existing voice search, manual credit entry, customer delete PIN, bill delete, sales reports and inventory modules remain included.
+Accounting rules:
+1. Bill Wise Profit/Loss = final bill amount minus full purchase cost of all goods in that bill.
+2. Actual Profit for a bill = actual cash/UPI/bank amount received against that bill minus its full purchase cost. Discount/write-off is not cash and does not count as Sales.
+3. General customer payment applies cash to oldest outstanding bills first (FIFO), then discount/write-off applies to remaining oldest dues.
+4. Bill Wise Payment lets the operator select one unpaid bill and enter partial/complete cash received and a separate discount against that bill.
+5. Payment/discount are separately recorded in customer ledger; only PAYMENT is included in Sales collections.
+6. Discount reduces customer/bill outstanding but is excluded from Sales and cash receipts.
 
-UI:
-- Buttons have a cleaner, consistent professional website-style treatment with improved spacing, focus states and active feedback.
-- Customer ledger main actions are arranged for mobile screens.
-
-Important:
-1. Export a data backup before replacing files.
-2. Replace all four root files: index.html, manifest.json, sw.js, README.txt.
-3. Do not clear browser site data or localStorage; that may erase inventory and customer records.
-4. This is a local/offline-first app; payment list shows entries recorded in this app's customer ledger.
-5. Verify the new interface on the actual phone after deployment. Browser syntax and archive integrity checks do not equal full device testing.
-
-
-V39 Modification:
-- Payment Receipt screen now has voice search for Village and Customer Name, matching the Khata Dekhen voice matching workflow.
-- Voice village recognition ranks similar village names; choosing one filters the customer list.
-- Voice customer recognition ranks similar customer names within the selected village and shows village/balance details.
-- Clicking “भुगतान दर्ज करें” now asks for confirmation with customer, village, amount, date and payment mode. The ledger entry is saved only after OK. Cancel leaves data unchanged.
-- Existing localStorage key navvastram_inventory_v2 is preserved.
+Testing note: JavaScript syntax check and ZIP integrity check performed. Browser/device end-to-end workflow and real thermal printer testing remain outstanding.
