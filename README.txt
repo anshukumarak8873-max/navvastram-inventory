@@ -10,3 +10,11 @@ Changes:
 - Existing navvastram_inventory_v2 localStorage key and previous records are preserved.
 
 Before updating, export an in-app backup. Do not clear browser Site Data. Source syntax and ZIP integrity checked; mobile workflow not tested on a physical device.
+
+
+V55 Dashboard Update:
+- Professional dashboard layout.
+- Total summary details are hidden until the user opens 'Kul Jankari Dekhen'.
+- Large Expense and Savings actions are placed at the top.
+- Expense details are hidden until 'Kharch Vivaran Dekhen' is opened.
+- Existing localStorage data key is preserved; take a backup before updating and do not clear browser site data.

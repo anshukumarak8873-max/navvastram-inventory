@@ -83,7 +83,25 @@ body.workflow-focus .home-main-btn small{font-size:10px}
 .money-section-title h3{font-size:14px;margin:0 0 9px}
 .money-back{margin-bottom:10px;width:100%}
 @media(max-width:380px){.money-form-grid{grid-template-columns:1fr}.money-tile{font-size:13px}}
-.money-subview .divider{margin:16px 0;border-top:1px solid #e2e9e4}.money-subview h3{margin-top:15px}</style></head><body>
+.money-subview .divider{margin:16px 0;border-top:1px solid #e2e9e4}.money-subview h3{margin-top:15px}
+/* V55 professional Money Manager dashboard */
+.money-dashboard-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.money-dashboard-head h2{margin:0}
+.money-dashboard-toggle{width:100%;padding:13px 14px;text-align:left;font-weight:850;display:flex;align-items:center;justify-content:space-between}
+.money-kpi[hidden],.money-dashboard-details[hidden]{display:none!important}
+.money-kpi{margin-top:10px}
+.money-dashboard-details{margin-top:10px}
+.money-primary-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 0 14px}
+.money-primary-btn{min-height:88px;padding:15px 10px;border:0;border-radius:15px;background:linear-gradient(145deg,#214b40,#173b32);color:#fff;font-size:18px;font-weight:900;box-shadow:0 4px 12px #10251a20}
+.money-primary-btn.savings{background:linear-gradient(145deg,#c49a42,#8c6824)}
+.money-primary-btn small{display:block;font-size:11px;font-weight:550;margin-top:5px;opacity:.95}
+.money-secondary-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.money-tile{min-height:72px}
+.expense-detail-toggle{width:100%;margin-top:16px;padding:13px 14px;text-align:left;font-weight:850;display:flex;justify-content:space-between;align-items:center}
+.expense-detail-content[hidden]{display:none!important}
+@media(max-width:380px){.money-primary-btn{font-size:16px;min-height:80px;padding:12px 7px}.money-primary-btn small{font-size:10px}}
+
+</style></head><body>
 <header><h1>🧾 NavVastram Inventory</h1><p>स्टॉक, बारकोड, खरीद, बिक्री और हिस्ट्री</p></header>
 <main>
 <section class="home-main-actions" aria-label="मुख्य कार्य">
@@ -331,10 +349,13 @@ body.workflow-focus .home-main-btn small{font-size:10px}
 </section>
 
 <section class="panel" id="money">
- <div class="card">
-  <h2>💰 खर्च, स्टाफ और बचत का पूरा हिसाब</h2>
-  <p class="note">घर और दुकान के खर्च अलग रहेंगे। दुकान से घर या स्टाफ को निकला कपड़ा Inventory से घटेगा और Purchase Price पर दर्ज होगा।</p>
-  <div class="money-kpi">
+ <div class="card money-dashboard-card">
+  <div class="money-dashboard-head"><h2>💰 खर्च, स्टाफ और बचत</h2></div>
+  <p class="note">घर और दुकान के खर्च, स्टाफ भुगतान और बचत का पूरा हिसाब एक जगह।</p>
+  <button class="secondary money-dashboard-toggle" id="toggleMoneySummary" type="button" aria-expanded="false">
+   <span>📊 कुल जानकारी देखें</span><span id="moneySummaryChevron">⌄</span>
+  </button>
+  <div class="money-kpi" id="moneyKpiDetails" hidden>
    <div class="stat"><b id="moneyMonthExpense">₹0</b><span>इस महीने कुल खर्च</span></div>
    <div class="stat"><b id="moneyMonthSaving">₹0</b><span>इस महीने जमा / बचत</span></div>
    <div class="stat"><b id="moneyHomeCash">₹0</b><span>घर खर्च — नकद</span></div>
@@ -342,18 +363,19 @@ body.workflow-focus .home-main-btn small{font-size:10px}
    <div class="stat"><b id="moneyShopCash">₹0</b><span>दुकान खर्च — नकद</span></div>
    <div class="stat"><b id="moneyShopCloth">₹0</b><span>दुकान खर्च — कपड़ा</span></div>
   </div>
-  <h3>📋 इस महीने का खर्च — अलग-अलग विवरण</h3>
-  <div id="moneyDashboardDetails"></div>
  </div>
  <div class="card">
-  <h2>कौन-सा हिसाब खोलना है?</h2>
-  <div class="money-home">
-   <button class="money-tile" data-money-view="expense">🏠 घर / दुकान खर्च<small>Cash और कपड़े का खर्च</small></button>
-   <button class="money-tile" data-money-view="staff">👨‍💼 Staff Salary<small>कई बार में भुगतान और कपड़ा</small></button>
+  <h2>⚡ मुख्य काम</h2>
+  <div class="money-primary-actions">
+   <button class="money-primary-btn" data-money-view="expense">➕ खर्च दर्ज करें<small>घर / दुकान खर्च</small></button>
+   <button class="money-primary-btn savings" data-money-view="saving">🏦 बचत / जमा<small>Post Office और SIP</small></button>
+  </div>
+  <h3>अन्य हिसाब</h3>
+  <div class="money-secondary-grid">
+   <button class="money-tile" data-money-view="staff">👨‍💼 Staff Salary<small>भुगतान और कपड़ा</small></button>
    <button class="money-tile" data-money-view="fixed">📅 Fixed खर्च<small>EMI, CC Interest, Bank Charges</small></button>
-   <button class="money-tile" data-money-view="saving">🏦 Deposit / Savings<small>Post Office और SIP</small></button>
    <button class="money-tile" data-money-view="credit">💳 Credit Card हिसाब<small>Statement और Bill Payment</small></button>
-   <button class="money-tile" data-money-view="history" style="grid-column:1/-1">📚 पूरा हिसाब / History<small>तारीख के अनुसार सभी एंट्री</small></button>
+   <button class="money-tile" data-money-view="history">📚 पूरा हिसाब / History<small>तारीख के अनुसार सभी एंट्री</small></button>
   </div>
  </div>
  <div class="card money-subview" id="moneyExpenseView" hidden>
@@ -378,6 +400,13 @@ body.workflow-focus .home-main-btn small{font-size:10px}
   </div>
   <div class="field"><label>विवरण / Remark</label><textarea id="expRemark" placeholder="खर्च का कारण"></textarea></div>
   <button class="primary full-btn" id="saveExpense">💾 खर्च Save करें</button>
+  <button class="secondary expense-detail-toggle" id="toggleExpenseDetails" type="button" aria-expanded="false">
+   <span>📋 खर्च विवरण देखें</span><span id="expenseDetailsChevron">⌄</span>
+  </button>
+  <div class="expense-detail-content" id="expenseDetailsContent" hidden>
+   <h3>📋 इस महीने का खर्च — अलग-अलग विवरण</h3>
+   <div id="moneyDashboardDetails" class="money-dashboard-details"></div>
+  </div>
  </div>
 
  <div class="card money-subview" id="moneyStaffView" hidden>
@@ -939,6 +968,8 @@ function moneyMonth(){return moneyToday().slice(0,7)}
 function setMoneyDates(){['expDate','staffDate','fixedDate','savingDate','moneyTo'].forEach(id=>{if($(id)&&!$(id).value)$(id).value=moneyToday()});if($('moneyFrom')&&!$('moneyFrom').value)$('moneyFrom').value=moneyMonth()+'-01'}
 function moneyView(v){document.querySelectorAll('.money-subview').forEach(x=>x.hidden=true);let id={expense:'moneyExpenseView',staff:'moneyStaffView',fixed:'moneyFixedView',saving:'moneySavingView',credit:'moneyCreditView',history:'moneyHistoryView'}[v];if(id)$(id).hidden=false;setMoneyDates();$('ccPayDate').value=moneyToday();renderMoney();renderCreditCard();requestAnimationFrame(()=>$(id)?.scrollIntoView({block:'start',behavior:'smooth'}))}
 document.querySelectorAll('[data-money-view]').forEach(b=>b.onclick=()=>moneyView(b.dataset.moneyView));
+$('toggleMoneySummary')?.addEventListener('click',()=>{let box=$('moneyKpiDetails'),btn=$('toggleMoneySummary'),open=box.hidden;box.hidden=!open;btn.setAttribute('aria-expanded',String(open));btn.querySelector('span').textContent=open?'📊 कुल जानकारी छिपाएँ':'📊 कुल जानकारी देखें';$('moneySummaryChevron').textContent=open?'⌃':'⌄'});
+$('toggleExpenseDetails')?.addEventListener('click',()=>{let box=$('expenseDetailsContent'),btn=$('toggleExpenseDetails'),open=box.hidden;box.hidden=!open;btn.setAttribute('aria-expanded',String(open));btn.querySelector('span').textContent=open?'📋 खर्च विवरण बंद करें':'📋 खर्च विवरण देखें';$('expenseDetailsChevron').textContent=open?'⌃':'⌄';if(open)renderMoney()});
 document.querySelectorAll('[data-money-back]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.money-subview').forEach(x=>x.hidden=true);$('money').scrollIntoView({block:'start',behavior:'smooth'})});
 $('expMode').onchange=()=>{let mode=$('expMode').value,cloth=mode==='CLOTH',cc=mode==='CREDIT';$('expCashFields').hidden=cloth;$('expClothFields').hidden=!cloth;$('expCCCategoryField').hidden=!cc;$('expType').disabled=cc;if(cc)$('expAmount').placeholder='Credit Card से खर्च रकम';else $('expType').disabled=false};
 
